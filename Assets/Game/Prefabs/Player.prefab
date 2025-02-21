@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 6187172498047022163}
   - component: {fileID: 3028881137775629212}
   - component: {fileID: 7248835933968573196}
-  - component: {fileID: 5788578813299909607}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,29 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &5788578813299909607
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 357486769919864826}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2923005791949602849
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,10 +94,11 @@ GameObject:
   - component: {fileID: 4344361282828841681}
   - component: {fileID: 1303728231965367872}
   - component: {fileID: 826755378780962214}
-  - component: {fileID: 5833647355896778908}
-  m_Layer: 0
+  - component: {fileID: 8115531999138419698}
+  - component: {fileID: 8176692616691342517}
+  m_Layer: 3
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -200,7 +177,7 @@ MonoBehaviour:
   sceneName: PlayGround
   coinPrefab: {fileID: 0}
   coinAmount: 3
---- !u!114 &5833647355896778908
+--- !u!114 &8115531999138419698
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -209,10 +186,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 2923005791949602849}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 649c5ae888f183945968fd55901b4d90, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d269ea5bb880d64a876e81df998bdf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 6
+  gravity: 9.81
+--- !u!114 &8176692616691342517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2923005791949602849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eeca098cbadde224aa02737ca1e4318a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6732074591021677134
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,8 +214,7 @@ GameObject:
   - component: {fileID: 6784000337224352933}
   - component: {fileID: 2606309606508733382}
   - component: {fileID: 5481328502326015088}
-  - component: {fileID: 4165567130381238224}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -297,27 +286,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4165567130381238224
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6732074591021677134}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8928766915767567394
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +295,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8260566863218464819}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Visuals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
