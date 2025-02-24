@@ -7,6 +7,7 @@ public class PlayerInput : MonoBehaviour
 {
     public static event Action<Vector2> OnMove;
     public static event Action OnAttack;
+    public static event Action<bool> OnDefend;
 
     void Update()
     {
@@ -19,6 +20,15 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) // Click izquierdo para atacar
         {
             OnAttack?.Invoke();
+        }
+
+        if (Input.GetMouseButtonDown(1)) // Click derecho para defender
+        {
+            OnDefend?.Invoke(true);
+        }
+        else if (Input.GetMouseButtonUp(1)) // Soltar click derecho para dejar de defender
+        {
+            OnDefend?.Invoke(false);
         }
     }
 }

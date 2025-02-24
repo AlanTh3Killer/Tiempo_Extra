@@ -122,6 +122,26 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &434081481 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2727241248152747288, guid: ec6679a833bcbfc489a6f40803f6f028, type: 3}
+  m_PrefabInstance: {fileID: 8727764146602441948}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &434081482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 434081481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9581287689533d4458b6de06342e960d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackDamage: 10
+  attackCooldown: 1.5
+  defenseDuration: 1
 --- !u!1001 &695399629
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1137,10 +1157,17 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1372571018}
+    - target: {fileID: 8065507197216857413, guid: ec6679a833bcbfc489a6f40803f6f028, type: 3}
+      propertyPath: combatSystem
+      value: 
+      objectReference: {fileID: 434081482}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2727241248152747288, guid: ec6679a833bcbfc489a6f40803f6f028, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 434081482}
   m_SourcePrefab: {fileID: 100100000, guid: ec6679a833bcbfc489a6f40803f6f028, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

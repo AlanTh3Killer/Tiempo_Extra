@@ -12,17 +12,19 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float activationRange = 10f;
     [SerializeField] private NavMeshAgent agent;
 
-    [Header("Ataque")]
-    [SerializeField] private int attackDamage = 10;
-    [SerializeField] private float attackCooldown = 1.5f;
+    [Header("Combate")]
+    [SerializeField] private CombatSystem combatSystem;
+    [SerializeField] private float defenseChance = 0.3f; // Probabilidad de defenderse
+    [SerializeField] private float defenseCooldown = 5f;
 
-    private bool isAttacking = false;
     private bool isTargetDetected = false;
     private Health targetHealth;
+    private bool canDefend = true;
 
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        combatSystem = GetComponent<CombatSystem>();
         agent.stoppingDistance = stoppingDistance;
     }
 
@@ -40,6 +42,11 @@ public class EnemyAI : MonoBehaviour
     {
         float distance = Vector3.Distance(transform.position, target.position);
         isTargetDetected = distance <= activationRange;
+
+        if (isTargetDetected)
+        {
+            Debug.Log($"{gameObject.name}: Jugador detectado, persiguiendo...");
+        }
     }
 
     private void MoveTowardsTarget()
@@ -48,12 +55,14 @@ public class EnemyAI : MonoBehaviour
 
         if (distance > stoppingDistance)
         {
-            agent.isStopped = false; // Asegurar que el agente puede moverse
+            agent.isStopped = false;
             agent.SetDestination(target.position);
+            Debug.Log($"{gameObject.name}: Moviéndose hacia el jugador...");
         }
         else
         {
-            agent.isStopped = true; // Detener completamente al enemigo
+            agent.isStopped = true;
+            Debug.Log($"{gameObject.name}: Ha llegado al jugador y se prepara para atacar o defenderse.");
         }
     }
 
@@ -63,38 +72,26 @@ public class EnemyAI : MonoBehaviour
         {
             targetHealth = other.GetComponent<Health>();
 
-            if (!isAttacking)
+            if (canDefend && Random.value < defenseChance)
             {
-                StartCoroutine(Attack());
+                Debug.Log($"{gameObject.name}: Se está defendiendo!");
+                StartCoroutine(Defend());
+            }
+            else if (targetHealth != null)
+            {
+                Debug.Log($"{gameObject.name}: Atacando al jugador!");
+                combatSystem.Attack(targetHealth);
             }
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private IEnumerator Defend()
     {
-        if (other.CompareTag("Player"))
-        {
-            isAttacking = false;
-        }
-    }
-
-    private IEnumerator Attack()
-    {
-        isAttacking = true;
-        while (isAttacking && targetHealth != null)
-        {
-            targetHealth.Damage(attackDamage);
-            yield return new WaitForSeconds(attackCooldown);
-        }
-    }
-
-    // Dibuja los rangos de detección en el editor
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, activationRange);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, stoppingDistance);
+        combatSystem.StartDefense();
+        canDefend = false;
+        Debug.Log($"{gameObject.name}: En cooldown de defensa...");
+        yield return new WaitForSeconds(defenseCooldown);
+        canDefend = true;
+        Debug.Log($"{gameObject.name}: Puede volver a defenderse.");
     }
 }

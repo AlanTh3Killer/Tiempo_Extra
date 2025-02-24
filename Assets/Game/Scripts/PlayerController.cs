@@ -4,16 +4,29 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movimiento")]
     public float speed = 6.0f;
-    public float gravity = 9.81f; // Para que el CharacterController se mantenga en el suelo
+    public float gravity = 9.81f;
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController controller;
+
+    [Header("Combate")]
+    public int attackDamage = 10;
+    public float attackCooldown = 0.5f;
+    private bool canAttack = true;
+    private Health healthComponent;
+
+    [Header("Defensa")]
+    public bool isDefending = false;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        healthComponent = GetComponent<Health>();
+
         PlayerInput.OnMove += Move;
         PlayerInput.OnAttack += Attack;
+        PlayerInput.OnDefend += ToggleDefense;
     }
 
     void Move(Vector2 movement)
@@ -25,7 +38,6 @@ public class PlayerController : MonoBehaviour
             transform.forward = moveDirection.normalized;
         }
 
-        // Aplicar gravedad para mantenerlo en el suelo
         if (!controller.isGrounded)
         {
             moveDirection.y -= gravity * Time.deltaTime;
@@ -36,12 +48,30 @@ public class PlayerController : MonoBehaviour
 
     void Attack()
     {
+        if (!canAttack || isDefending) return;
+
         Debug.Log("¡Jugador está atacando!");
+        StartCoroutine(AttackCooldown());
+    }
+
+    void ToggleDefense(bool defending)
+    {
+        isDefending = defending;
+        healthComponent.SetInvulnerable(isDefending);
+        Debug.Log(isDefending ? "Defendiendo" : "Bajando defensa");
+    }
+
+    IEnumerator AttackCooldown()
+    {
+        canAttack = false;
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true;
     }
 
     private void OnDestroy()
     {
         PlayerInput.OnMove -= Move;
         PlayerInput.OnAttack -= Attack;
+        PlayerInput.OnDefend -= ToggleDefense;
     }
 }
