@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
@@ -9,27 +10,43 @@ public class Health : MonoBehaviour, IDamagable
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private int currentHealth;
     private bool isDead = false;
-    private bool isInvulnerable = false; // Nueva variable para la defensa
+    private bool isInvulnerable = false;
 
-    [SerializeField] UnityEvent onDeath;
+    [Header("Eventos")]
+    [SerializeField] private UnityEngine.Events.UnityEvent onDeath;
+
+    [Header("Escena")]
     [SerializeField] private string sceneName;
 
-    private WaveSpawner waveSpawner;
+    [Header("UI Game Over")]
+    public GameObject gameOverPanel;
+    public float gameOverDelay = 2f;
 
-    [Header("Moneda")]
-    [SerializeField] private GameObject coinPrefab;
-    [SerializeField] private int coinAmount = 3;
+    [Header("Barra de Vida")]
+    public RectTransform healthBar; // Referencia al RectTransform de la barra de vida
+    private float healthBarFullWidth; // Ancho original de la barra de vida
 
     private void Start()
     {
         currentHealth = maxHealth;
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+
+        if (healthBar != null)
+        {
+            healthBarFullWidth = healthBar.sizeDelta.x; // Guardamos el tamaño original
+        }
+
+        UpdateHealthBar(); // Asegura que la barra empiece con el tamaño correcto
     }
 
     public void Damage(int damage)
     {
-        if (isInvulnerable || isDead) return; // No recibir daño si está defendiendo o ya está muerto
+        if (isInvulnerable || isDead) return;
 
         currentHealth -= damage;
+        UpdateHealthBar(); // Actualiza la barra de vida al recibir daño
+
+        Debug.Log($"{gameObject.name} recibió {damage} de daño. Vida restante: {currentHealth}");
 
         if (currentHealth <= 0)
         {
@@ -42,35 +59,54 @@ public class Health : MonoBehaviour, IDamagable
         isInvulnerable = value;
     }
 
-    private void Die()
+    void Die()
     {
         if (isDead) return;
+
         isDead = true;
+        onDeath?.Invoke();
 
-        onDeath.Invoke();
-        SpawnCoins();
-        Destroy(gameObject);
-    }
-
-    private void SpawnCoins()
-    {
-        if (coinPrefab == null) return;
-
-        for (int i = 0; i < coinAmount; i++)
+        if (gameObject.CompareTag("Player"))
         {
-            Vector3 spawnPosition = transform.position + Random.insideUnitSphere * 1.5f;
-            spawnPosition.y = transform.position.y;
-            Instantiate(coinPrefab, spawnPosition, Quaternion.identity);
+            ShowGameOverScreen();
+        }
+        else
+        {
+            NotifyLevelManager();
+            Destroy(gameObject, 1f);
         }
     }
 
-    public void ReloadTheScene()
+    void ShowGameOverScreen()
     {
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+            StartCoroutine(ReloadSceneAfterDelay());
+        }
+    }
+
+    IEnumerator ReloadSceneAfterDelay()
+    {
+        yield return new WaitForSeconds(gameOverDelay);
         SceneManager.LoadScene(sceneName);
     }
 
-    public void ActivateDeathScreen(GameObject deathScreen)
+    void NotifyLevelManager()
     {
-        deathScreen.SetActive(true);
+        LevelManager levelManager = FindObjectOfType<LevelManager>();
+        if (levelManager != null)
+        {
+            levelManager.EnemyDefeated();
+        }
+    }
+
+    void UpdateHealthBar()
+    {
+        if (healthBar != null)
+        {
+            float healthPercent = (float)currentHealth / maxHealth;
+            healthBar.sizeDelta = new Vector2(healthBarFullWidth * healthPercent, healthBar.sizeDelta.y);
+        }
     }
 }

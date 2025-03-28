@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     [Header("Combate")]
     public int attackDamage = 10;
     public float attackCooldown = 0.5f;
+    public float attackRange = 1.5f; // Rango del ataque
+    public float attackAngle = 60f; // Ángulo del ataque
     private bool canAttack = true;
     private Health healthComponent;
 
@@ -51,7 +53,32 @@ public class PlayerController : MonoBehaviour
         if (!canAttack || isDefending) return;
 
         Debug.Log("¡Jugador está atacando!");
+        PerformAttack();
         StartCoroutine(AttackCooldown());
+    }
+
+    void PerformAttack()
+    {
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, attackRange);
+
+        foreach (Collider enemy in hitEnemies)
+        {
+            if (enemy.CompareTag("Enemy"))
+            {
+                Vector3 directionToEnemy = (enemy.transform.position - transform.position).normalized;
+                float angleToEnemy = Vector3.Angle(transform.forward, directionToEnemy);
+
+                if (angleToEnemy <= attackAngle / 2)
+                {
+                    Health enemyHealth = enemy.GetComponent<Health>();
+                    if (enemyHealth != null)
+                    {
+                        enemyHealth.Damage(attackDamage);
+                        Debug.Log("¡Golpeaste al enemigo!");
+                    }
+                }
+            }
+        }
     }
 
     void ToggleDefense(bool defending)
@@ -73,5 +100,21 @@ public class PlayerController : MonoBehaviour
         PlayerInput.OnMove -= Move;
         PlayerInput.OnAttack -= Attack;
         PlayerInput.OnDefend -= ToggleDefense;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        // Dibuja el área de ataque en la escena
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        // Dibuja el cono del ataque
+        Vector3 forward = transform.forward * attackRange;
+        Vector3 leftLimit = Quaternion.Euler(0, -attackAngle / 2, 0) * forward;
+        Vector3 rightLimit = Quaternion.Euler(0, attackAngle / 2, 0) * forward;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, transform.position + leftLimit);
+        Gizmos.DrawLine(transform.position, transform.position + rightLimit);
     }
 }
