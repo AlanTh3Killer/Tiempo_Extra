@@ -65,10 +65,9 @@ public class PlayerController : MonoBehaviour
         {
             if (enemy.CompareTag("Enemy"))
             {
-                Vector3 directionToEnemy = (enemy.transform.position - transform.position).normalized;
-                float angleToEnemy = Vector3.Angle(transform.forward, directionToEnemy);
+                CombatSystem enemyCombat = enemy.GetComponent<CombatSystem>();
 
-                if (angleToEnemy <= attackAngle / 2)
+                if (enemyCombat != null && !enemyCombat.IsDefending())  //  NO ATACAR SI SE ESTÁ DEFENDIENDO
                 {
                     Health enemyHealth = enemy.GetComponent<Health>();
                     if (enemyHealth != null)
@@ -76,6 +75,10 @@ public class PlayerController : MonoBehaviour
                         enemyHealth.Damage(attackDamage);
                         Debug.Log("¡Golpeaste al enemigo!");
                     }
+                }
+                else
+                {
+                    Debug.Log("El enemigo bloqueó tu ataque.");
                 }
             }
         }

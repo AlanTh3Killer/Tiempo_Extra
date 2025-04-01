@@ -10,31 +10,33 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private Transform target;
     [SerializeField] private float stoppingDistance = 2f;
     [SerializeField] private float activationRange = 10f;
+    [SerializeField] private float attackRange = 2.5f;
     [SerializeField] private NavMeshAgent agent;
 
     [Header("Combate")]
     [SerializeField] private CombatSystem combatSystem;
-    [SerializeField] private float defenseChance = 0.3f; // Probabilidad de defenderse
-    [SerializeField] private float defenseCooldown = 5f;
-
+    [SerializeField] private float attackInterval = 2.0f;
+    [SerializeField] private float defenseDuration = 1.5f;
     private bool isTargetDetected = false;
-    private Health targetHealth;
-    private bool canDefend = true;
+    private bool isDefending = false;
+    private bool isAttacking = false;
 
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         combatSystem = GetComponent<CombatSystem>();
         agent.stoppingDistance = stoppingDistance;
+
+        StartCoroutine(CombatLoop());
     }
 
     private void Update()
     {
         DetectPlayer();
 
-        if (isTargetDetected && target != null)
+        if (isTargetDetected && target != null && !isDefending)
         {
-            MoveTowardsTarget();
+            FollowPlayer();
         }
     }
 
@@ -42,56 +44,63 @@ public class EnemyAI : MonoBehaviour
     {
         float distance = Vector3.Distance(transform.position, target.position);
         isTargetDetected = distance <= activationRange;
-
-        if (isTargetDetected)
-        {
-            Debug.Log($"{gameObject.name}: Jugador detectado, persiguiendo...");
-        }
     }
 
-    private void MoveTowardsTarget()
+    private void FollowPlayer()
     {
         float distance = Vector3.Distance(transform.position, target.position);
 
-        if (distance > stoppingDistance)
+        if (!isAttacking && !isDefending)
         {
             agent.isStopped = false;
             agent.SetDestination(target.position);
-            Debug.Log($"{gameObject.name}: Moviéndose hacia el jugador...");
-        }
-        else
-        {
-            agent.isStopped = true;
-            Debug.Log($"{gameObject.name}: Ha llegado al jugador y se prepara para atacar o defenderse.");
         }
     }
 
-    private void OnTriggerStay(Collider other)
+    private IEnumerator CombatLoop()
     {
-        if (other.CompareTag("Player"))
+        while (true)
         {
-            targetHealth = other.GetComponent<Health>();
+            if (isTargetDetected)
+            {
+                float distance = Vector3.Distance(transform.position, target.position);
 
-            if (canDefend && Random.value < defenseChance)
-            {
-                Debug.Log($"{gameObject.name}: Se está defendiendo!");
-                StartCoroutine(Defend());
+                if (distance <= attackRange)
+                {
+                    isAttacking = true;
+                    isDefending = false;
+                    agent.isStopped = false;
+                    Debug.Log($"{gameObject.name}: Atacando");
+                    combatSystem.Attack(target.GetComponent<Health>());
+                    yield return new WaitForSeconds(attackInterval);
+                }
+
+                isAttacking = false;
+                isDefending = true;
+                agent.isStopped = true;
+                combatSystem.StartDefense();
+                Debug.Log($"{gameObject.name}: Defendiendo");
+                yield return new WaitForSeconds(defenseDuration);
+
+                isDefending = false;
+                agent.isStopped = false;
             }
-            else if (targetHealth != null)
-            {
-                Debug.Log($"{gameObject.name}: Atacando al jugador!");
-                combatSystem.Attack(targetHealth);
-            }
+
+            yield return null;
         }
     }
 
-    private IEnumerator Defend()
+    private void OnDrawGizmosSelected()
     {
-        combatSystem.StartDefense();
-        canDefend = false;
-        Debug.Log($"{gameObject.name}: En cooldown de defensa...");
-        yield return new WaitForSeconds(defenseCooldown);
-        canDefend = true;
-        Debug.Log($"{gameObject.name}: Puede volver a defenderse.");
+        if (target == null) return;
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, activationRange);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, stoppingDistance);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

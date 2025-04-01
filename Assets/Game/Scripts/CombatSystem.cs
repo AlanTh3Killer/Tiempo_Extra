@@ -22,7 +22,6 @@ public class CombatSystem : MonoBehaviour
     {
         if (!isAttacking && targetHealth != null)
         {
-            Debug.Log($"{gameObject.name}: Iniciando ataque...");
             StartCoroutine(PerformAttack(targetHealth));
         }
     }
@@ -30,18 +29,15 @@ public class CombatSystem : MonoBehaviour
     private IEnumerator PerformAttack(Health targetHealth)
     {
         isAttacking = true;
-        Debug.Log($"{gameObject.name}: Golpeó al objetivo e hizo {attackDamage} de daño!");
         targetHealth.Damage(attackDamage);
         yield return new WaitForSeconds(attackCooldown);
         isAttacking = false;
-        Debug.Log($"{gameObject.name}: Puede atacar de nuevo.");
     }
 
     public void StartDefense()
     {
         if (!isDefending)
         {
-            Debug.Log($"{gameObject.name}: Activando defensa!");
             StartCoroutine(PerformDefense());
         }
     }
@@ -50,10 +46,13 @@ public class CombatSystem : MonoBehaviour
     {
         isDefending = true;
         healthComponent.SetInvulnerable(true);
-        Debug.Log($"{gameObject.name}: ¡Ahora es invulnerable!");
         yield return new WaitForSeconds(defenseDuration);
         healthComponent.SetInvulnerable(false);
         isDefending = false;
-        Debug.Log($"{gameObject.name}: Terminó la defensa, ahora puede recibir daño.");
+    }
+
+    public bool IsDefending()
+    {
+        return isDefending;  //  Esto devuelve si el enemigo está en defensa
     }
 }

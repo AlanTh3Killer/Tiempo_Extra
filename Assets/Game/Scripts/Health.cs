@@ -54,6 +54,14 @@ public class Health : MonoBehaviour, IDamagable
         }
     }
 
+    public void Heal(int amount)
+    {
+        if (isDead) return; // No curar si el personaje está muerto
+
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        UpdateHealthBar(); //  ACTUALIZA LA BARRA DE VIDA AL CURARSE
+    }
+
     public void SetInvulnerable(bool value)
     {
         isInvulnerable = value;
@@ -108,5 +116,10 @@ public class Health : MonoBehaviour, IDamagable
             float healthPercent = (float)currentHealth / maxHealth;
             healthBar.sizeDelta = new Vector2(healthBarFullWidth * healthPercent, healthBar.sizeDelta.y);
         }
+    }
+
+    public bool IsInvulnerable()
+    {
+        return isInvulnerable;
     }
 }
