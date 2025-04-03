@@ -7,9 +7,11 @@ public class Healing : MonoBehaviour
     public int healAmount = 20; // Cantidad de vida que restaura
     public float lifetime = 10f; // Tiempo antes de que el objeto desaparezca
 
+    [Header("Sonidos")]
+    public AudioClip pickupSound;
     private void Start()
     {
-        // Destruir el objeto después de cierto tiempo si no se recoge
+        // Destruir el objeto despuï¿½s de cierto tiempo si no se recoge
         Destroy(gameObject, lifetime);
     }
 
@@ -23,7 +25,12 @@ public class Healing : MonoBehaviour
             if (playerHealth != null)
             {
                 playerHealth.Heal(healAmount);
-                Destroy(gameObject); // Destruir el objeto después de recogerlo
+                // Sonido al recoger
+                if (pickupSound != null)
+                {
+                    SoundManager.instance.PlaySFX(pickupSound, 0.8f);
+                }
+                Destroy(gameObject); // Destruir el objeto despuï¿½s de recogerlo
             }
         }
     }

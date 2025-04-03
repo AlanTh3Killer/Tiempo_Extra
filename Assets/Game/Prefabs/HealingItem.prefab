@@ -5270,3 +5270,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healAmount: 20
   lifetime: 10
+  pickupSound: {fileID: 8300000, guid: 9f5a3cc154a62674d9837c5617e9ccd3, type: 3}

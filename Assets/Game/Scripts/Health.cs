@@ -27,6 +27,9 @@ public class Health : MonoBehaviour, IDamagable
     private float healthBarFullWidth; // Ancho original de la barra de vida
     private Animator animator;
 
+    [Header("Sonidos")]
+    public AudioClip hurtSound;
+
 
     private void Start()
     {
@@ -50,7 +53,10 @@ public class Health : MonoBehaviour, IDamagable
         UpdateHealthBar(); // Actualiza la barra de vida al recibir da�o
 
         Debug.Log($"{gameObject.name} recibi� {damage} de da�o. Vida restante: {currentHealth}");
-
+        if (!isDead && hurtSound != null)
+        {
+            SoundManager.instance.PlaySFX(hurtSound, 0.7f);
+        }
         if (currentHealth <= 0)
         {
             Die();
@@ -73,9 +79,10 @@ public class Health : MonoBehaviour, IDamagable
     void Die()
     {
         if (isDead) return;
-
         isDead = true;
-        onDeath?.Invoke();
+
+        // Debug de confirmación
+        Debug.Log($"Muerte confirmada en {gameObject.name}");
 
         if (gameObject.CompareTag("Player"))
         {
@@ -83,17 +90,16 @@ public class Health : MonoBehaviour, IDamagable
         }
         else
         {
-            NotifyLevelManager();
-
-            // 🔹 Llamar a Die() en EnemyAI para manejar la animación
             EnemyAI enemyAI = GetComponent<EnemyAI>();
             if (enemyAI != null)
             {
-                enemyAI.Die();
+                enemyAI.Die(); // Ahora Die() notifica al LevelManager
             }
             else
             {
-                Destroy(gameObject, 1f); // En caso de que no tenga EnemyAI, se destruye rápido
+                // Fallback directo
+                NotifyLevelManager();
+                Destroy(gameObject, 1f);
             }
         }
     }
@@ -110,15 +116,27 @@ public class Health : MonoBehaviour, IDamagable
     IEnumerator ReloadSceneAfterDelay()
     {
         yield return new WaitForSeconds(gameOverDelay);
+
+        // Notifica al SoundManager antes de recargar
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.HandleSceneChange(sceneName);
+        }
+
         SceneManager.LoadScene(sceneName);
     }
 
-    void NotifyLevelManager()
+    public void NotifyLevelManager() // Asegúrate que es público
     {
         LevelManager levelManager = FindObjectOfType<LevelManager>();
         if (levelManager != null)
         {
             levelManager.EnemyDefeated();
+            Debug.Log("Enemigo notificó al LevelManager correctamente");
+        }
+        else
+        {
+            Debug.LogError("LevelManager no encontrado en escena");
         }
     }
 

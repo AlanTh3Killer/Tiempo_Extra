@@ -89,6 +89,11 @@ public class PlayerController : MonoBehaviour
 
         animator.SetInteger("Player_AttackIndex", attackIndex);
         animator.SetTrigger("Player_Attack");
+        // Reproducir sonido de ataque desde el SoundManager
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.PlayRandomSFX(SoundManager.instance.attackSounds, 0.8f);
+        }
 
         PerformAttack();
         StartCoroutine(AttackCooldown());

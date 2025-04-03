@@ -19,7 +19,10 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float defenseDuration = 1.5f;
 
     [Header("Animaciones")]
-    [SerializeField] private Animator animator; // 🔹 Ahora podemos asignarlo manualmente en el inspector
+    [SerializeField] private Animator animator; // Ahora podemos asignarlo manualmente en el inspector
+
+    // [Header("Sonidos")] <-- Agrega esto si quieres organizar el Inspector
+    public AudioClip[] enemyAttackSounds; // Sonidos específicos para el enemigo
 
     private bool isTargetDetected = false;
     private bool isDefending = false;
@@ -31,11 +34,17 @@ public class EnemyAI : MonoBehaviour
 
     private void Start()
     {
+        // Si quieres usar los mismos sonidos del jugador, puedes asignarlos automáticamente:
+        if (SoundManager.instance != null && enemyAttackSounds.Length == 0)
+        {
+            enemyAttackSounds = SoundManager.instance.attackSounds;
+        }
+
         agent = GetComponent<NavMeshAgent>();
         combatSystem = GetComponent<CombatSystem>();
         healthComponent = GetComponent<Health>();
 
-        // 🔹 Si no está asignado en el inspector, lo buscamos en los hijos
+        //  Si no está asignado en el inspector, lo buscamos en los hijos
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
@@ -85,11 +94,18 @@ public class EnemyAI : MonoBehaviour
 
                 if (distance <= attackRange && !isDefending)
                 {
+                    // Reproducir sonido ANTES del ataque
+                    if (enemyAttackSounds.Length > 0 && SoundManager.instance != null)
+                    {
+                        SoundManager.instance.PlayRandomSFX(enemyAttackSounds, 0.7f);
+                        yield return new WaitForSeconds(0.1f); // Pequeño delay para sincronización
+                    }
+
                     isAttacking = true;
                     isDefending = false;
                     agent.isStopped = true;
 
-                    // 🔹 Alternar entre las animaciones de ataque
+                    //  Alternar entre las animaciones de ataque
                     lastAttackIndex = (lastAttackIndex == 0) ? 1 : 0;
                     animator.SetInteger("attackIndex", lastAttackIndex);
                     animator.SetTrigger("isAttacking");
@@ -118,7 +134,7 @@ public class EnemyAI : MonoBehaviour
         combatSystem.StartDefense();
         healthComponent.SetInvulnerable(true);
 
-        // 🔹 Activar animación de defensa
+        // Activar animación de defensa
         animator.SetBool("isDefending", true);
 
         Debug.Log($"{gameObject.name}: Defendiéndose");
@@ -128,7 +144,7 @@ public class EnemyAI : MonoBehaviour
         agent.isStopped = false;
         healthComponent.SetInvulnerable(false);
 
-        // 🔹 Desactivar animación de defensa
+        //  Desactivar animación de defensa
         animator.SetBool("isDefending", false);
 
         Debug.Log($"{gameObject.name}: Terminó la defensa");
@@ -137,53 +153,54 @@ public class EnemyAI : MonoBehaviour
     public void Die()
     {
         if (isDead) return;
-
         isDead = true;
 
-        // 🔹 Detener el NavMeshAgent completamente
+        // Detener componentes
         if (agent != null)
         {
             agent.isStopped = true;
             agent.enabled = false;
         }
 
-        // 🔹 Detener todas las corrutinas (para evitar que sigan ataques o defensas)
         StopAllCoroutines();
 
-        // 🔹 Asegurar que no se ejecuten otras animaciones
-        animator.SetBool("isWalking", false);
-        animator.SetBool("isDefending", false);
-        animator.SetInteger("attackIndex", 0);
-
-        // 🔹 Asegurar que CombatSystem detiene el ataque y la defensa
-        combatSystem.StopCombatActions();
-
-        // 🔹 Activar animación de muerte
+        // Animación de muerte
         animator.SetBool("isDead", true);
+        animator.Play("Death", 0, 0f);
 
-        Debug.Log($"{gameObject.name}: Ha muerto. Esperando animación...");
+        // Obtener referencia al Health y notificar
+        Health health = GetComponent<Health>();
+        if (health != null)
+        {
+            health.NotifyLevelManager(); // Llamada CORRECTA al método en Health
+        }
+        else
+        {
+            Debug.LogError("Componente Health no encontrado en el enemigo");
+        }
 
-        // 🔹 Esperar a que termine la animación antes de destruir
+        // Destrucción después de la animación
         StartCoroutine(WaitForDeathAnimation());
     }
 
+    [Header("Configuración de Muerte")]
+    [Tooltip("Tiempo adicional después de la animación de muerte")]
+    [SerializeField] private float deathAnimationExtraTime = 0.8f; // Ajusta este valor en el Inspector
+
     private IEnumerator WaitForDeathAnimation()
     {
-        yield return null; // 🔹 Esperar un frame para que el Animator actualice su estado
+        // Espera el frame actual para asegurar que la animación comenzó
+        yield return null;
 
-        // 🔹 Esperar a que la animación realmente inicie
-        while (!animator.GetCurrentAnimatorStateInfo(0).IsName("Death"))
-        {
-            yield return null;
-        }
+        // Obtiene el estado actual de la animación
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
-        // 🔹 Obtener la duración de la animación de muerte
-        float deathAnimLength = animator.GetCurrentAnimatorStateInfo(0).length;
-        Debug.Log($"{gameObject.name}: Animación de muerte dura {deathAnimLength} segundos.");
+        // Calcula el tiempo restante de la animación
+        float remainingAnimTime = stateInfo.length * (1f - stateInfo.normalizedTime);
 
-        yield return new WaitForSeconds(deathAnimLength);
+        // Espera la animación + tiempo extra
+        yield return new WaitForSeconds(remainingAnimTime + deathAnimationExtraTime);
 
-        // 🔹 Destruir el enemigo después de la animación
         Destroy(gameObject);
     }
 

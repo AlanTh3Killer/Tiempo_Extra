@@ -13,7 +13,7 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        // Contamos cuántos enemigos hay al inicio de la escena
+        // Contamos cuï¿½ntos enemigos hay al inicio de la escena
         totalEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
 
         // Ocultamos el panel al inicio
@@ -37,10 +37,16 @@ public class LevelManager : MonoBehaviour
     {
         if (levelCompletePanel != null)
         {
-            levelCompletePanel.SetActive(true); // Mostramos el mensaje
+            levelCompletePanel.SetActive(true);
         }
 
         yield return new WaitForSeconds(levelCompleteDelay);
+
+        // Notifica al SoundManager sobre el cambio de escena
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.HandleSceneChange(nextSceneName);
+        }
 
         if (!string.IsNullOrEmpty(nextSceneName))
         {
