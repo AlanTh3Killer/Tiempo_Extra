@@ -53,6 +53,13 @@ public class CombatSystem : MonoBehaviour
 
     public bool IsDefending()
     {
-        return isDefending;  //  Esto devuelve si el enemigo está en defensa
+        return isDefending;  //  Esto devuelve si el enemigo esta en defensa
+    }
+
+    public void StopCombatActions()
+    {
+        StopAllCoroutines(); //  Detiene cualquier ataque o defensa en curso
+        isAttacking = false;
+        isDefending = false;
     }
 }

@@ -25,18 +25,21 @@ public class Health : MonoBehaviour, IDamagable
     [Header("Barra de Vida")]
     public RectTransform healthBar; // Referencia al RectTransform de la barra de vida
     private float healthBarFullWidth; // Ancho original de la barra de vida
+    private Animator animator;
+
 
     private void Start()
     {
+        animator = GetComponentInChildren<Animator>();  // Busca en el hijo donde estÃ¡n las animaciones
         currentHealth = maxHealth;
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
 
         if (healthBar != null)
         {
-            healthBarFullWidth = healthBar.sizeDelta.x; // Guardamos el tamaño original
+            healthBarFullWidth = healthBar.sizeDelta.x; // Guardamos el tamaï¿½o original
         }
 
-        UpdateHealthBar(); // Asegura que la barra empiece con el tamaño correcto
+        UpdateHealthBar(); // Asegura que la barra empiece con el tamaï¿½o correcto
     }
 
     public void Damage(int damage)
@@ -44,9 +47,9 @@ public class Health : MonoBehaviour, IDamagable
         if (isInvulnerable || isDead) return;
 
         currentHealth -= damage;
-        UpdateHealthBar(); // Actualiza la barra de vida al recibir daño
+        UpdateHealthBar(); // Actualiza la barra de vida al recibir daï¿½o
 
-        Debug.Log($"{gameObject.name} recibió {damage} de daño. Vida restante: {currentHealth}");
+        Debug.Log($"{gameObject.name} recibiï¿½ {damage} de daï¿½o. Vida restante: {currentHealth}");
 
         if (currentHealth <= 0)
         {
@@ -56,7 +59,7 @@ public class Health : MonoBehaviour, IDamagable
 
     public void Heal(int amount)
     {
-        if (isDead) return; // No curar si el personaje está muerto
+        if (isDead) return; // No curar si el personaje estï¿½ muerto
 
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         UpdateHealthBar(); //  ACTUALIZA LA BARRA DE VIDA AL CURARSE
@@ -81,7 +84,17 @@ public class Health : MonoBehaviour, IDamagable
         else
         {
             NotifyLevelManager();
-            Destroy(gameObject, 1f);
+
+            // ðŸ”¹ Llamar a Die() en EnemyAI para manejar la animaciÃ³n
+            EnemyAI enemyAI = GetComponent<EnemyAI>();
+            if (enemyAI != null)
+            {
+                enemyAI.Die();
+            }
+            else
+            {
+                Destroy(gameObject, 1f); // En caso de que no tenga EnemyAI, se destruye rÃ¡pido
+            }
         }
     }
 

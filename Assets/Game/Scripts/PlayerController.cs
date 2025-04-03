@@ -9,22 +9,32 @@ public class PlayerController : MonoBehaviour
     public float gravity = 9.81f;
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController controller;
+    [SerializeField] private Animator animator;
 
     [Header("Combate")]
     public int attackDamage = 10;
     public float attackCooldown = 0.5f;
-    public float attackRange = 1.5f; // Rango del ataque
-    public float attackAngle = 60f; // Ángulo del ataque
+    public float comboTime = 1f;
+    private int attackIndex = 0;
     private bool canAttack = true;
+    private float lastAttackTime;
+    private bool isAttacking = false;
+
     private Health healthComponent;
 
     [Header("Defensa")]
-    public bool isDefending = false;
+    private bool isDefending = false;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         healthComponent = GetComponent<Health>();
+        animator = GetComponentInChildren<Animator>();
+
+        if (animator == null)
+        {
+            Debug.LogError("El jugador no tiene un Animator asignado.");
+        }
 
         PlayerInput.OnMove += Move;
         PlayerInput.OnAttack += Attack;
@@ -33,11 +43,18 @@ public class PlayerController : MonoBehaviour
 
     void Move(Vector2 movement)
     {
-        moveDirection = new Vector3(movement.x, 0, movement.y);
+        if (isAttacking || isDefending) return; // No moverse mientras ataca o se defiende
 
-        if (moveDirection.sqrMagnitude > 0.01f)
+        moveDirection = new Vector3(movement.x, 0, movement.y);
+        bool isMoving = moveDirection.sqrMagnitude > 0.01f; // Verifica si hay movimiento en la entrada
+
+        if (!isMoving)
         {
-            transform.forward = moveDirection.normalized;
+            moveDirection = Vector3.zero; //  Forzar a 0 cuando no haya movimiento
+        }
+        else
+        {
+            transform.forward = moveDirection.normalized; // Rotar al moverse
         }
 
         if (!controller.isGrounded)
@@ -46,20 +63,58 @@ public class PlayerController : MonoBehaviour
         }
 
         controller.Move(moveDirection * speed * Time.deltaTime);
+
+        //  CorrecciÃ³n: Usa la distancia recorrida en vez de velocity
+        float movementThreshold = 0.05f; // PequeÃ±o margen de error
+        bool isActuallyMoving = moveDirection.sqrMagnitude > movementThreshold;
+
+        animator.SetBool("Player_isWalking", isActuallyMoving);
+
+        Debug.Log($"Moviendo: {isMoving} | Realmente Moviendo: {isActuallyMoving} | Velocidad: {controller.velocity.magnitude}");
     }
 
     void Attack()
     {
         if (!canAttack || isDefending) return;
 
-        Debug.Log("¡Jugador está atacando!");
+        // Si el segundo ataque ocurre dentro del tiempo del combo, cambia el ataque
+        if (Time.time - lastAttackTime <= comboTime)
+        {
+            attackIndex = (attackIndex == 0) ? 1 : 0;  // Alterna entre 0 y 1
+        }
+        else
+        {
+            attackIndex = 0; // Si pasa mucho tiempo, reinicia el combo
+        }
+
+        animator.SetInteger("Player_AttackIndex", attackIndex);
+        animator.SetTrigger("Player_Attack");
+
         PerformAttack();
         StartCoroutine(AttackCooldown());
+
+        lastAttackTime = Time.time;
+
+        //  Volver a Idle despuÃ©s del ataque
+        StartCoroutine(ReturnToIdleAfterAttack());
+    }
+
+    //  Esta corrutina esperarÃ¡ a que termine el ataque y regresarÃ¡ a Idle
+    IEnumerator ReturnToIdleAfterAttack()
+    {
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Espera la duraciÃ³n exacta de la animaciÃ³n
+        animator.SetTrigger("Player_Idle");
+    }
+
+    IEnumerator ResetAttackState()
+    {
+        yield return new WaitForSeconds(0.5f); // Ajusta esto al tiempo de la animaciÃ³n de ataque
+        isAttacking = false;
     }
 
     void PerformAttack()
     {
-        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, attackRange);
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 1.5f);
 
         foreach (Collider enemy in hitEnemies)
         {
@@ -67,18 +122,13 @@ public class PlayerController : MonoBehaviour
             {
                 CombatSystem enemyCombat = enemy.GetComponent<CombatSystem>();
 
-                if (enemyCombat != null && !enemyCombat.IsDefending())  //  NO ATACAR SI SE ESTÁ DEFENDIENDO
+                if (enemyCombat != null && !enemyCombat.IsDefending())
                 {
                     Health enemyHealth = enemy.GetComponent<Health>();
                     if (enemyHealth != null)
                     {
                         enemyHealth.Damage(attackDamage);
-                        Debug.Log("¡Golpeaste al enemigo!");
                     }
-                }
-                else
-                {
-                    Debug.Log("El enemigo bloqueó tu ataque.");
                 }
             }
         }
@@ -88,12 +138,17 @@ public class PlayerController : MonoBehaviour
     {
         isDefending = defending;
         healthComponent.SetInvulnerable(isDefending);
-        Debug.Log(isDefending ? "Defendiendo" : "Bajando defensa");
+        animator.SetBool("Player_isWalking", false);
+        animator.SetBool("Player_isDefending", isDefending);
+
+        if (isDefending)
+        {
+            animator.SetTrigger("Player_StartDefend");
+        }
     }
 
     IEnumerator AttackCooldown()
     {
-        canAttack = false;
         yield return new WaitForSeconds(attackCooldown);
         canAttack = true;
     }
@@ -103,21 +158,5 @@ public class PlayerController : MonoBehaviour
         PlayerInput.OnMove -= Move;
         PlayerInput.OnAttack -= Attack;
         PlayerInput.OnDefend -= ToggleDefense;
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        // Dibuja el área de ataque en la escena
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-
-        // Dibuja el cono del ataque
-        Vector3 forward = transform.forward * attackRange;
-        Vector3 leftLimit = Quaternion.Euler(0, -attackAngle / 2, 0) * forward;
-        Vector3 rightLimit = Quaternion.Euler(0, attackAngle / 2, 0) * forward;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position, transform.position + leftLimit);
-        Gizmos.DrawLine(transform.position, transform.position + rightLimit);
     }
 }
