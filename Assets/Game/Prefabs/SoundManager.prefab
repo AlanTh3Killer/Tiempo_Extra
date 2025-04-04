@@ -338,9 +338,9 @@ MonoBehaviour:
   musicSource: {fileID: 5125133658936262579}
   sfxSource: {fileID: 55237240367693903}
   ambientSource: {fileID: 5001211541814066052}
-  backgroundMusic: {fileID: 8300000, guid: a4e0ddfe1cec0be45a835fb9216921b5, type: 3}
-  menuMusic: {fileID: 8300000, guid: a4e0ddfe1cec0be45a835fb9216921b5, type: 3}
-  battleMusic: {fileID: 8300000, guid: a4e0ddfe1cec0be45a835fb9216921b5, type: 3}
+  backgroundMusic: {fileID: 8300000, guid: 28dd49a2ace6da5428fffaf912b9d858, type: 3}
+  menuMusic: {fileID: 8300000, guid: 28dd49a2ace6da5428fffaf912b9d858, type: 3}
+  battleMusic: {fileID: 8300000, guid: 28dd49a2ace6da5428fffaf912b9d858, type: 3}
   attackSounds:
   - {fileID: 8300000, guid: b6306e13e9ede994a81452e3f402b82b, type: 3}
   - {fileID: 8300000, guid: bd927c8c94c0ccf4c8c28f01a5eff54d, type: 3}
