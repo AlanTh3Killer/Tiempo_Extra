@@ -88,7 +88,7 @@ public class EnemyAI : MonoBehaviour
     {
         while (true)
         {
-            if (isTargetDetected)
+            if (isTargetDetected && !FreezzeGame.IsDialogueActive)
             {
                 float distance = Vector3.Distance(transform.position, target.position);
 
@@ -108,9 +108,11 @@ public class EnemyAI : MonoBehaviour
                     //  Alternar entre las animaciones de ataque
                     lastAttackIndex = (lastAttackIndex == 0) ? 1 : 0;
                     animator.SetInteger("attackIndex", lastAttackIndex);
+                    // Antes de atacar:
                     animator.SetTrigger("isAttacking");
+                    yield return new WaitForSeconds(0.3f); // Pre-hit delay
 
-                    Debug.Log($"{gameObject.name}: Atacando");
+                    // Ejecutar ataque real
                     combatSystem.Attack(target.GetComponent<Health>());
 
                     yield return new WaitForSeconds(attackInterval);

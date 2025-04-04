@@ -349,7 +349,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: db3736a6b63e9564ca569770d58d796a, type: 3}
   - {fileID: 8300000, guid: ad38cefffebe2564a88f188a29e1ccf0, type: 3}
   crowdAmbience: {fileID: 8300000, guid: 07ebb072103529e4082c73e212c5c15b, type: 3}
-  _musicVolume: 0.5
-  _sfxVolume: 0.5
-  _ambientVolume: 0.5
+  _musicVolume: 0.222
+  _sfxVolume: 0.674
+  _ambientVolume: 0.186
   ambientFadeSpeed: 0.5

@@ -5,27 +5,68 @@ using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
+    [Header("Tutorial")]
+    public GameObject tutorialPanel;
+    public float tutorialTime = 5f;
+
+    [Header("Configuración de Nivel")]
+    public string nextSceneName; // Nombre de la siguiente escena
+
+    [Header("Mensajes UI")]
+    public GameObject levelStartPanel; // Mensaje de inicio (arrastrar desde el Canvas)
+    public float startMessageTime = 3f; // Tiempo que muestra el mensaje inicial
     public GameObject levelCompletePanel; // Panel de "Nivel Completado"
     public float levelCompleteDelay = 2f; // Tiempo antes de cambiar de nivel
-    public string nextSceneName; // Nombre de la siguiente escena
 
     private int totalEnemies;
 
     private void Start()
     {
-        // Contamos cu�ntos enemigos hay al inicio de la escena
-        totalEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
+        if (SceneManager.GetActiveScene().buildIndex == 3 && tutorialPanel != null) // Asumiendo que el primer nivel es buildIndex 1
+        {
+            StartCoroutine(ShowTutorial());
+        }
 
-        // Ocultamos el panel al inicio
+        // Contar enemigos al inicio
+        totalEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
+        Debug.Log($"Enemigos en nivel: {totalEnemies}");
+
+        // Mostrar mensaje inicial
+        if (levelStartPanel != null)
+        {
+            StartCoroutine(ShowStartMessage());
+        }
+        else
+        {
+            Debug.LogWarning("No hay panel de inicio asignado");
+        }
+
+        // Ocultar panel de completado (si existe)
         if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(false);
         }
     }
 
+    private IEnumerator ShowTutorial()
+    {
+        tutorialPanel.SetActive(true);
+        yield return new WaitForSeconds(tutorialTime);
+        tutorialPanel.SetActive(false);
+    }
+
+    // Corrutina para mensaje inicial
+    private IEnumerator ShowStartMessage()
+    {
+        levelStartPanel.SetActive(true);
+        yield return new WaitForSeconds(startMessageTime);
+        levelStartPanel.SetActive(false);
+    }
+
     public void EnemyDefeated()
     {
         totalEnemies--;
+        Debug.Log($"Enemigos restantes: {totalEnemies}");
 
         if (totalEnemies <= 0)
         {
@@ -33,7 +74,8 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    IEnumerator LevelCompleted()
+    // Corrutina para completar nivel (sin cambios)
+    private IEnumerator LevelCompleted()
     {
         if (levelCompletePanel != null)
         {
@@ -42,7 +84,7 @@ public class LevelManager : MonoBehaviour
 
         yield return new WaitForSeconds(levelCompleteDelay);
 
-        // Notifica al SoundManager sobre el cambio de escena
+        // Notificar al SoundManager
         if (SoundManager.instance != null)
         {
             SoundManager.instance.HandleSceneChange(nextSceneName);
@@ -54,7 +96,7 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("No se ha asignado el nombre de la siguiente escena en LevelManager");
+            Debug.LogError("Nombre de siguiente escena no asignado");
         }
     }
 }

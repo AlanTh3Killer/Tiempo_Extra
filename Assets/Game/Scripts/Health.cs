@@ -61,6 +61,16 @@ public class Health : MonoBehaviour, IDamagable
         {
             Die();
         }
+
+        // Efecto visual
+        StartCoroutine(HitEffect());
+    }
+
+    private IEnumerator HitEffect()
+    {
+        GetComponentInChildren<Renderer>().material.color = Color.red; // Cambio rápido de color
+        yield return new WaitForSeconds(0.1f);
+        GetComponentInChildren<Renderer>().material.color = Color.white;
     }
 
     public void Heal(int amount)

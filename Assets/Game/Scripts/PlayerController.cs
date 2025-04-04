@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour
     private bool canAttack = true;
     private float lastAttackTime;
     private bool isAttacking = false;
+    public float hitDelay = 0.3f; // Ajusta según tu animación de ataque
+    public GameObject hitEffectPrefab; // Arrastra un prefab de partículas
 
     private Health healthComponent;
 
@@ -39,6 +41,12 @@ public class PlayerController : MonoBehaviour
         PlayerInput.OnMove += Move;
         PlayerInput.OnAttack += Attack;
         PlayerInput.OnDefend += ToggleDefense;
+    }
+
+    void Update()
+    {
+        if (FreezzeGame.IsDialogueActive) return;
+        // ... resto del código
     }
 
     void Move(Vector2 movement)
@@ -75,7 +83,7 @@ public class PlayerController : MonoBehaviour
 
     void Attack()
     {
-        if (!canAttack || isDefending) return;
+        if (!canAttack || isDefending || FreezzeGame.IsDialogueActive) return;
 
         // Si el segundo ataque ocurre dentro del tiempo del combo, cambia el ataque
         if (Time.time - lastAttackTime <= comboTime)
@@ -87,6 +95,9 @@ public class PlayerController : MonoBehaviour
             attackIndex = 0; // Si pasa mucho tiempo, reinicia el combo
         }
 
+        StartCoroutine(PerformAttackWithDelay()); // Cambio aquí
+        StartCoroutine(AttackCooldown());
+        lastAttackTime = Time.time;
         animator.SetInteger("Player_AttackIndex", attackIndex);
         animator.SetTrigger("Player_Attack");
         // Reproducir sonido de ataque desde el SoundManager
@@ -95,7 +106,7 @@ public class PlayerController : MonoBehaviour
             SoundManager.instance.PlayRandomSFX(SoundManager.instance.attackSounds, 0.8f);
         }
 
-        PerformAttack();
+        
         StartCoroutine(AttackCooldown());
 
         lastAttackTime = Time.time;
@@ -117,22 +128,24 @@ public class PlayerController : MonoBehaviour
         isAttacking = false;
     }
 
-    void PerformAttack()
-    {
-        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 1.5f);
+    
 
+    private IEnumerator PerformAttackWithDelay()
+    {
+        yield return new WaitForSeconds(hitDelay);
+
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 1.5f);
         foreach (Collider enemy in hitEnemies)
         {
             if (enemy.CompareTag("Enemy"))
             {
-                CombatSystem enemyCombat = enemy.GetComponent<CombatSystem>();
-
-                if (enemyCombat != null && !enemyCombat.IsDefending())
+                Health enemyHealth = enemy.GetComponent<Health>();
+                if (enemyHealth != null)
                 {
-                    Health enemyHealth = enemy.GetComponent<Health>();
-                    if (enemyHealth != null)
+                    enemyHealth.Damage(attackDamage);
+                    if (hitEffectPrefab != null)
                     {
-                        enemyHealth.Damage(attackDamage);
+                        Instantiate(hitEffectPrefab, enemy.transform.position, Quaternion.identity);
                     }
                 }
             }

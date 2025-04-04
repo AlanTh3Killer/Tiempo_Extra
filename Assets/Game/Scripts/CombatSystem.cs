@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class CombatSystem : MonoBehaviour
 {
+    [Header("Animation")]
+    public float hitFrameDelay = 0.3f; // Ajusta según tus animaciones
+    public ParticleSystem hitVFX; // Efecto al golpear
+
     [Header("Combate")]
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackCooldown = 1.5f;
@@ -29,8 +33,18 @@ public class CombatSystem : MonoBehaviour
     private IEnumerator PerformAttack(Health targetHealth)
     {
         isAttacking = true;
-        targetHealth.Damage(attackDamage);
-        yield return new WaitForSeconds(attackCooldown);
+
+        // Espera al frame de impacto exacto
+        yield return new WaitForSeconds(hitFrameDelay);
+
+        if (targetHealth != null && !targetHealth.IsInvulnerable())
+        {
+            targetHealth.Damage(attackDamage);
+            if (hitVFX != null) Instantiate(hitVFX, targetHealth.transform.position, Quaternion.identity);
+        }
+
+        // Tiempo restante de animación
+        yield return new WaitForSeconds(attackCooldown - hitFrameDelay);
         isAttacking = false;
     }
 
