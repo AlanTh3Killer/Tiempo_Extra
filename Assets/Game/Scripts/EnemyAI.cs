@@ -19,22 +19,20 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float defenseDuration = 1.5f;
 
     [Header("Animaciones")]
-    [SerializeField] private Animator animator; // Ahora podemos asignarlo manualmente en el inspector
+    [SerializeField] private Animator animator;
 
-    // [Header("Sonidos")] <-- Agrega esto si quieres organizar el Inspector
-    public AudioClip[] enemyAttackSounds; // Sonidos específicos para el enemigo
+    public AudioClip[] enemyAttackSounds;
 
     private bool isTargetDetected = false;
     private bool isDefending = false;
     private bool isAttacking = false;
     private bool isDead = false;
 
-    private int lastAttackIndex = 0; // Para alternar entre animaciones de ataque
+    private int lastAttackIndex = 0;
     private Health healthComponent;
 
     private void Start()
     {
-        // Si quieres usar los mismos sonidos del jugador, puedes asignarlos automáticamente:
         if (SoundManager.instance != null && enemyAttackSounds.Length == 0)
         {
             enemyAttackSounds = SoundManager.instance.attackSounds;
@@ -44,7 +42,6 @@ public class EnemyAI : MonoBehaviour
         combatSystem = GetComponent<CombatSystem>();
         healthComponent = GetComponent<Health>();
 
-        //  Si no está asignado en el inspector, lo buscamos en los hijos
         if (animator == null)
         {
             animator = GetComponentInChildren<Animator>();
@@ -65,8 +62,8 @@ public class EnemyAI : MonoBehaviour
             FollowPlayer();
         }
 
-        //  Actualizar animación de caminar
-        animator.SetBool("isWalking", agent.velocity.magnitude > 0.1f);
+        bool isMoving = agent.velocity.magnitude > 0.1f;
+        animator.SetBool("isWalking", isMoving);
     }
 
     private void DetectPlayer()
@@ -88,31 +85,26 @@ public class EnemyAI : MonoBehaviour
     {
         while (true)
         {
-            if (isTargetDetected && !FreezzeGame.IsDialogueActive)
+            if (isTargetDetected && !FreezzeGame.IsFrozen)
             {
                 float distance = Vector3.Distance(transform.position, target.position);
 
                 if (distance <= attackRange && !isDefending)
                 {
-                    // Reproducir sonido ANTES del ataque
                     if (enemyAttackSounds.Length > 0 && SoundManager.instance != null)
                     {
                         SoundManager.instance.PlayRandomSFX(enemyAttackSounds, 0.7f);
-                        yield return new WaitForSeconds(0.1f); // Pequeño delay para sincronización
+                        yield return new WaitForSeconds(0.1f);
                     }
 
                     isAttacking = true;
-                    isDefending = false;
                     agent.isStopped = true;
 
-                    //  Alternar entre las animaciones de ataque
                     lastAttackIndex = (lastAttackIndex == 0) ? 1 : 0;
                     animator.SetInteger("attackIndex", lastAttackIndex);
-                    // Antes de atacar:
                     animator.SetTrigger("isAttacking");
-                    yield return new WaitForSeconds(0.3f); // Pre-hit delay
 
-                    // Ejecutar ataque real
+                    yield return new WaitForSeconds(0.3f);
                     combatSystem.Attack(target.GetComponent<Health>());
 
                     yield return new WaitForSeconds(attackInterval);
@@ -136,7 +128,6 @@ public class EnemyAI : MonoBehaviour
         combatSystem.StartDefense();
         healthComponent.SetInvulnerable(true);
 
-        // Activar animación de defensa
         animator.SetBool("isDefending", true);
 
         Debug.Log($"{gameObject.name}: Defendiéndose");
@@ -146,9 +137,7 @@ public class EnemyAI : MonoBehaviour
         agent.isStopped = false;
         healthComponent.SetInvulnerable(false);
 
-        //  Desactivar animación de defensa
         animator.SetBool("isDefending", false);
-
         Debug.Log($"{gameObject.name}: Terminó la defensa");
     }
 
@@ -157,7 +146,6 @@ public class EnemyAI : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // Detener componentes
         if (agent != null)
         {
             agent.isStopped = true;
@@ -166,43 +154,27 @@ public class EnemyAI : MonoBehaviour
 
         StopAllCoroutines();
 
-        // Animación de muerte
         animator.SetBool("isDead", true);
         animator.Play("Death", 0, 0f);
 
-        // Obtener referencia al Health y notificar
         Health health = GetComponent<Health>();
         if (health != null)
         {
-            health.NotifyLevelManager(); // Llamada CORRECTA al método en Health
-        }
-        else
-        {
-            Debug.LogError("Componente Health no encontrado en el enemigo");
+            health.NotifyLevelManager();
         }
 
-        // Destrucción después de la animación
         StartCoroutine(WaitForDeathAnimation());
     }
 
     [Header("Configuración de Muerte")]
-    [Tooltip("Tiempo adicional después de la animación de muerte")]
-    [SerializeField] private float deathAnimationExtraTime = 0.8f; // Ajusta este valor en el Inspector
+    [SerializeField] private float deathAnimationExtraTime = 0.8f;
 
     private IEnumerator WaitForDeathAnimation()
     {
-        // Espera el frame actual para asegurar que la animación comenzó
         yield return null;
-
-        // Obtiene el estado actual de la animación
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-
-        // Calcula el tiempo restante de la animación
         float remainingAnimTime = stateInfo.length * (1f - stateInfo.normalizedTime);
-
-        // Espera la animación + tiempo extra
         yield return new WaitForSeconds(remainingAnimTime + deathAnimationExtraTime);
-
         Destroy(gameObject);
     }
 

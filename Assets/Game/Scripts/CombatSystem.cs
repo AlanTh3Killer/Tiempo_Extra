@@ -5,7 +5,7 @@ using UnityEngine;
 public class CombatSystem : MonoBehaviour
 {
     [Header("Animation")]
-    public float hitFrameDelay = 0.3f; // Ajusta según tus animaciones
+    public float hitFrameDelay = 0.3f; // Ajusta segï¿½n tus animaciones
     public ParticleSystem hitVFX; // Efecto al golpear
 
     [Header("Combate")]
@@ -43,7 +43,7 @@ public class CombatSystem : MonoBehaviour
             if (hitVFX != null) Instantiate(hitVFX, targetHealth.transform.position, Quaternion.identity);
         }
 
-        // Tiempo restante de animación
+        // Tiempo restante de animaciï¿½n
         yield return new WaitForSeconds(attackCooldown - hitFrameDelay);
         isAttacking = false;
     }

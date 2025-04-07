@@ -2062,6 +2062,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3194526908604100374, guid: 5c20da59dfe4c6d4a98631c22f9b7277, type: 3}
   m_PrefabInstance: {fileID: 2100420395}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2100420397 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3550087569250455186, guid: 5c20da59dfe4c6d4a98631c22f9b7277, type: 3}
+  m_PrefabInstance: {fileID: 2100420395}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2122380937
 GameObject:
   m_ObjectHideFlags: 0
@@ -13907,7 +13912,7 @@ PrefabInstance:
     - target: {fileID: 3105625213440670835, guid: 4e0e497319850ad4fbb02fe078f6890a, type: 3}
       propertyPath: levelStartPanel
       value: 
-      objectReference: {fileID: 2030893732}
+      objectReference: {fileID: 2100420397}
     - target: {fileID: 3105625213440670835, guid: 4e0e497319850ad4fbb02fe078f6890a, type: 3}
       propertyPath: startMessageTime
       value: 5

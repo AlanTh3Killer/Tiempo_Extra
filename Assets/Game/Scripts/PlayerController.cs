@@ -19,8 +19,6 @@ public class PlayerController : MonoBehaviour
     private bool canAttack = true;
     private float lastAttackTime;
     private bool isAttacking = false;
-    public float hitDelay = 0.3f; // Ajusta según tu animación de ataque
-    public GameObject hitEffectPrefab; // Arrastra un prefab de partículas
 
     private Health healthComponent;
 
@@ -45,59 +43,82 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (FreezzeGame.IsDialogueActive) return;
-        // ... resto del código
-    }
-
-    void Move(Vector2 movement)
-    {
-        if (isAttacking || isDefending) return; // No moverse mientras ataca o se defiende
-
-        moveDirection = new Vector3(movement.x, 0, movement.y);
-        bool isMoving = moveDirection.sqrMagnitude > 0.01f; // Verifica si hay movimiento en la entrada
-
-        if (!isMoving)
+        // --- Único cambio necesario ---
+        if (FreezzeGame.IsFrozen || FreezzeGame.IsFrozen)
         {
-            moveDirection = Vector3.zero; //  Forzar a 0 cuando no haya movimiento
-        }
-        else
-        {
-            transform.forward = moveDirection.normalized; // Rotar al moverse
+            // Congelar completamente al personaje
+            moveDirection = Vector3.zero;
+            animator.SetBool("Player_isWalking", false);
+            return;
         }
 
+        // --- El resto del Update original se mantiene ---
         if (!controller.isGrounded)
         {
             moveDirection.y -= gravity * Time.deltaTime;
         }
+    }
 
-        controller.Move(moveDirection * speed * Time.deltaTime);
+    void Move(Vector2 movement)
+    {
+        // 1. Verificar estados que bloquean movimiento
+        if (isAttacking || isDefending || FreezzeGame.IsFrozen)
+        {
+            moveDirection = Vector3.zero;
+            animator.SetBool("Player_isWalking", false); // Fuerza idle al pausar
+            return;
+        }
 
-        //  Corrección: Usa la distancia recorrida en vez de velocity
-        float movementThreshold = 0.05f; // Pequeño margen de error
-        bool isActuallyMoving = moveDirection.sqrMagnitude > movementThreshold;
+        // 2. Lógica original de movimiento (que ya funcionaba)
+        moveDirection = new Vector3(movement.x, 0, movement.y);
+        bool isMoving = moveDirection.sqrMagnitude > 0.01f;
+
+        if (!isMoving)
+        {
+            moveDirection = Vector3.zero;
+        }
+        else
+        {
+            transform.forward = moveDirection.normalized;
+        }
+
+        // 3. Aplicar gravedad solo si el juego no está pausado
+        if (!FreezzeGame.IsFrozen && !controller.isGrounded)
+        {
+            moveDirection.y -= gravity * Time.deltaTime;
+        }
+
+        // 4. Mover solo si no está pausado
+        if (!FreezzeGame.IsFrozen)
+        {
+            controller.Move(moveDirection * speed * Time.deltaTime);
+        }
+
+        // 5. Control de animación mejorado
+        bool isActuallyMoving = !FreezzeGame.IsFrozen &&
+                             moveDirection.sqrMagnitude > 0.05f;
 
         animator.SetBool("Player_isWalking", isActuallyMoving);
 
-        Debug.Log($"Moviendo: {isMoving} | Realmente Moviendo: {isActuallyMoving} | Velocidad: {controller.velocity.magnitude}");
+        Debug.Log($"Mov: {isMoving} | Real: {isActuallyMoving} | Vel: {controller.velocity.magnitude} | Pausa: {FreezzeGame.IsFrozen}");
     }
 
     void Attack()
     {
-        if (!canAttack || isDefending || FreezzeGame.IsDialogueActive) return;
+        // Añadir verificación de diálogos
+        if (!canAttack || isDefending || FreezzeGame.IsFrozen || FreezzeGame.IsFrozen)
+            return;
 
-        // Si el segundo ataque ocurre dentro del tiempo del combo, cambia el ataque
+        // --- El resto del método Attack original se mantiene ---
         if (Time.time - lastAttackTime <= comboTime)
         {
-            attackIndex = (attackIndex == 0) ? 1 : 0;  // Alterna entre 0 y 1
+            attackIndex = (attackIndex == 0) ? 1 : 0;
         }
         else
         {
             attackIndex = 0; // Si pasa mucho tiempo, reinicia el combo
         }
 
-        StartCoroutine(PerformAttackWithDelay()); // Cambio aquí
-        StartCoroutine(AttackCooldown());
-        lastAttackTime = Time.time;
         animator.SetInteger("Player_AttackIndex", attackIndex);
         animator.SetTrigger("Player_Attack");
         // Reproducir sonido de ataque desde el SoundManager
@@ -106,46 +127,47 @@ public class PlayerController : MonoBehaviour
             SoundManager.instance.PlayRandomSFX(SoundManager.instance.attackSounds, 0.8f);
         }
 
-        
+        PerformAttack();
         StartCoroutine(AttackCooldown());
 
         lastAttackTime = Time.time;
+        // Reemplázala con:
+        StartCoroutine(ResetAttackState());
 
         //  Volver a Idle después del ataque
-        StartCoroutine(ReturnToIdleAfterAttack());
+        //StartCoroutine(ReturnToIdleAfterAttack());
     }
 
     //  Esta corrutina esperará a que termine el ataque y regresará a Idle
-    IEnumerator ReturnToIdleAfterAttack()
-    {
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Espera la duración exacta de la animación
-        animator.SetTrigger("Player_Idle");
-    }
+    //IEnumerator ReturnToIdleAfterAttack()
+    //{
+    //    yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length); // Espera la duración exacta de la animación
+    //    animator.SetTrigger("Player_Idle");
+    //}
 
     IEnumerator ResetAttackState()
     {
-        yield return new WaitForSeconds(0.5f); // Ajusta esto al tiempo de la animación de ataque
+        yield return new WaitForSeconds(0.5f); // Duración aproximada del ataque
         isAttacking = false;
+        animator.SetInteger("Player_AttackIndex", -1); // Reset opcional
     }
 
-    
-
-    private IEnumerator PerformAttackWithDelay()
+    void PerformAttack()
     {
-        yield return new WaitForSeconds(hitDelay);
-
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, 1.5f);
+
         foreach (Collider enemy in hitEnemies)
         {
             if (enemy.CompareTag("Enemy"))
             {
-                Health enemyHealth = enemy.GetComponent<Health>();
-                if (enemyHealth != null)
+                CombatSystem enemyCombat = enemy.GetComponent<CombatSystem>();
+
+                if (enemyCombat != null && !enemyCombat.IsDefending())
                 {
-                    enemyHealth.Damage(attackDamage);
-                    if (hitEffectPrefab != null)
+                    Health enemyHealth = enemy.GetComponent<Health>();
+                    if (enemyHealth != null)
                     {
-                        Instantiate(hitEffectPrefab, enemy.transform.position, Quaternion.identity);
+                        enemyHealth.Damage(attackDamage);
                     }
                 }
             }

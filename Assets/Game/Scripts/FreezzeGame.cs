@@ -5,13 +5,10 @@ using UnityEngine;
 public class FreezzeGame : MonoBehaviour
 {
     private static bool isDialogueActive = false;
+    private static bool isLevelUIPanelActive = false;
 
-    public static bool IsDialogueActive
-    {
-        get { return isDialogueActive; }
-    }
+    public static bool IsFrozen => isDialogueActive || isLevelUIPanelActive;
 
-    // Llamar esto al mostrar diálogos
     public static void StartDialogue()
     {
         isDialogueActive = true;
@@ -20,10 +17,35 @@ public class FreezzeGame : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
-    // Llamar esto al terminar diálogos
     public static void EndDialogue()
     {
         isDialogueActive = false;
-        Time.timeScale = 1f;
+        CheckUnfreeze();
+    }
+
+    public static void SetLevelUIPanelActive(bool state)
+    {
+        isLevelUIPanelActive = state;
+
+        if (state)
+        {
+            Time.timeScale = 0f;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            CheckUnfreeze();
+        }
+    }
+
+    private static void CheckUnfreeze()
+    {
+        if (!isDialogueActive && !isLevelUIPanelActive)
+        {
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 }

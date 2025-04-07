@@ -59,8 +59,11 @@ public class LevelManager : MonoBehaviour
     private IEnumerator ShowStartMessage()
     {
         levelStartPanel.SetActive(true);
-        yield return new WaitForSeconds(startMessageTime);
+        FreezzeGame.SetLevelUIPanelActive(true);
+
+        yield return new WaitForSecondsRealtime(startMessageTime); // Usar tiempo real porque Time.timeScale = 0
         levelStartPanel.SetActive(false);
+        FreezzeGame.SetLevelUIPanelActive(false);
     }
 
     public void EnemyDefeated()
@@ -74,17 +77,17 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    // Corrutina para completar nivel (sin cambios)
     private IEnumerator LevelCompleted()
     {
         if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(true);
+            //FreezzeGame.SetLevelUIPanelActive(true);
         }
 
-        yield return new WaitForSeconds(levelCompleteDelay);
+        yield return new WaitForSecondsRealtime(levelCompleteDelay); // También usar tiempo real
+        //FreezzeGame.SetLevelUIPanelActive(false);
 
-        // Notificar al SoundManager
         if (SoundManager.instance != null)
         {
             SoundManager.instance.HandleSceneChange(nextSceneName);

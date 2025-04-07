@@ -1248,11 +1248,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3913926396849093782, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -127.032
+      value: -970.07
       objectReference: {fileID: 0}
     - target: {fileID: 3913926396849093782, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -525.465
+      value: -797.47
       objectReference: {fileID: 0}
     - target: {fileID: 3913926396849093782, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1284,7 +1284,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3913926396849093782, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 0.0010375977
       objectReference: {fileID: 0}
     - target: {fileID: 3913926396849093782, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1316,6 +1316,14 @@ PrefabInstance:
 
         FELICIDADES,
         PASAS A LA SIGUIENTE RONDA O LO QUE SEA '
+      objectReference: {fileID: 0}
+    - target: {fileID: 6500204058104089256, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
+      propertyPath: m_fontSize
+      value: 38.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 6500204058104089256, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
+      propertyPath: m_margin.y
+      value: -9.690182
       objectReference: {fileID: 0}
     - target: {fileID: 7570306342922176969, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
       propertyPath: m_SizeDelta.y
@@ -13786,6 +13794,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3105625213440670835, guid: 4e0e497319850ad4fbb02fe078f6890a, type: 3}
       propertyPath: tutorialPanel
+      value: 
+      objectReference: {fileID: 1465593664}
+    - target: {fileID: 3105625213440670835, guid: 4e0e497319850ad4fbb02fe078f6890a, type: 3}
+      propertyPath: levelStartPanel
       value: 
       objectReference: {fileID: 1465593664}
     - target: {fileID: 3105625213440670835, guid: 4e0e497319850ad4fbb02fe078f6890a, type: 3}
