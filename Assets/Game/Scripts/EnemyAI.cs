@@ -31,8 +31,13 @@ public class EnemyAI : MonoBehaviour
     private int lastAttackIndex = 0;
     private Health healthComponent;
 
+    private Collider enemyCollider;
+    private Collider playerCollider;
+
     private void Start()
     {
+        enemyCollider = GetComponent<CapsuleCollider>(); // O Collider
+        playerCollider = GameObject.FindWithTag("Player").GetComponent<CharacterController>();
         if (SoundManager.instance != null && enemyAttackSounds.Length == 0)
         {
             enemyAttackSounds = SoundManager.instance.attackSounds;
@@ -91,23 +96,15 @@ public class EnemyAI : MonoBehaviour
 
                 if (distance <= attackRange && !isDefending)
                 {
-                    if (enemyAttackSounds.Length > 0 && SoundManager.instance != null)
-                    {
-                        SoundManager.instance.PlayRandomSFX(enemyAttackSounds, 0.7f);
-                        yield return new WaitForSeconds(0.1f);
-                    }
-
+                    Physics.IgnoreCollision(enemyCollider, playerCollider, true);
                     isAttacking = true;
-                    agent.isStopped = true;
 
                     lastAttackIndex = (lastAttackIndex == 0) ? 1 : 0;
                     animator.SetInteger("attackIndex", lastAttackIndex);
                     animator.SetTrigger("isAttacking");
 
-                    yield return new WaitForSeconds(0.3f);
-                    combatSystem.Attack(target.GetComponent<Health>());
-
                     yield return new WaitForSeconds(attackInterval);
+                    Physics.IgnoreCollision(enemyCollider, playerCollider, false);
                     isAttacking = false;
                 }
 
@@ -116,7 +113,6 @@ public class EnemyAI : MonoBehaviour
                     StartCoroutine(Defend());
                 }
             }
-
             yield return null;
         }
     }
@@ -166,6 +162,51 @@ public class EnemyAI : MonoBehaviour
         StartCoroutine(WaitForDeathAnimation());
     }
 
+    // Método para el sonido de anticipación (windup)
+    public void PlayAttackWindupSound()
+    {
+        if (!isDead && SoundManager.instance != null && enemyAttackSounds.Length > 0)
+        {
+            SoundManager.instance.PlayRandomSFX(enemyAttackSounds, 0.7f);
+        }
+    }
+
+    // Método para el sonido de impacto
+    public void PlayAttackImpactSound()
+    {
+        if (!isDead && SoundManager.instance != null && enemyAttackSounds.Length > 0)
+        {
+            SoundManager.instance.PlayRandomSFX(enemyAttackSounds, 1f); // Volumen más alto para el impacto
+        }
+    }
+
+    public void ExecuteDamage()
+    {
+        if (target != null && !isDead)
+        {
+            // Verificación adicional de rango
+            float currentDistance = Vector3.Distance(transform.position, target.position);
+
+            if (currentDistance <= attackRange * 1.2f) // 20% de margen adicional
+            {
+                combatSystem.Attack(target.GetComponent<Health>());
+                Debug.Log("¡Golpe conectado!");
+            }
+            else
+            {
+                Debug.Log("Golpe fallado: jugador fuera de rango");
+            }
+        }
+    }
+
+    public bool IsTargetInAttackRange()
+    {
+        if (target == null) return false;
+
+        float currentDistance = Vector3.Distance(transform.position, target.position);
+        return currentDistance <= attackRange * 1.2f; // Con margen de seguridad
+    }
+
     [Header("Configuración de Muerte")]
     [SerializeField] private float deathAnimationExtraTime = 0.8f;
 
@@ -178,6 +219,12 @@ public class EnemyAI : MonoBehaviour
         Destroy(gameObject);
     }
 
+    // Versión alternativa que Unity detecta mejor
+    public void AnimationEvent(string eventName)
+    {
+        if (eventName == "ExecuteDamage") ExecuteDamage();
+    }
+
     private void OnDrawGizmosSelected()
     {
         if (target == null) return;
@@ -188,7 +235,13 @@ public class EnemyAI : MonoBehaviour
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, stoppingDistance);
 
+        // Rango de ataque normal
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        // Rango con margen (solo en editor)
+        Gizmos.color = new Color(1, 0.5f, 0, 0.3f); // Naranja semitransparente
+        Gizmos.DrawWireSphere(transform.position, attackRange * 1.2f);
+
     }
 }

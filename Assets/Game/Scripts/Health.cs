@@ -66,11 +66,32 @@ public class Health : MonoBehaviour, IDamagable
         StartCoroutine(HitEffect());
     }
 
+    private Dictionary<Material, Color> originalMaterialColors = new Dictionary<Material, Color>();
+
     private IEnumerator HitEffect()
     {
-        GetComponentInChildren<Renderer>().material.color = Color.red; // Cambio rápido de color
+        Renderer[] allRenderers = GetComponentsInChildren<Renderer>();
+
+        // Primera pasada: guardar colores y aplicar rojo
+        foreach (Renderer renderer in allRenderers)
+        {
+            foreach (Material material in renderer.materials)
+            {
+                if (!originalMaterialColors.ContainsKey(material))
+                {
+                    originalMaterialColors[material] = material.color;
+                }
+                material.color = Color.red;
+            }
+        }
+
         yield return new WaitForSeconds(0.1f);
-        GetComponentInChildren<Renderer>().material.color = Color.white;
+
+        // Segunda pasada: restaurar colores
+        foreach (var kvp in originalMaterialColors)
+        {
+            kvp.Key.color = kvp.Value;
+        }
     }
 
     public void Heal(int amount)

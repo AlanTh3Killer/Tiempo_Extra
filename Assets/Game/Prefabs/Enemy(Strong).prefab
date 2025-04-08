@@ -241,6 +241,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9581287689533d4458b6de06342e960d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitFrameDelay: 0.3
+  hitVFX: {fileID: 0}
   attackDamage: 30
   attackCooldown: 3
   defenseDuration: 2
@@ -1129,6 +1131,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a75072e26dd0cab4dbb1725a4a5001fe, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7093585544766081977}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a75072e26dd0cab4dbb1725a4a5001fe, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3733750106170864380}
   m_SourcePrefab: {fileID: 100100000, guid: a75072e26dd0cab4dbb1725a4a5001fe, type: 3}
 --- !u!4 &2682777163493171132 stripped
 Transform:
@@ -1161,6 +1166,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3733750106170864380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3346441916445754630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9122f9f657eae6641bd44306bd1f11b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyAI: {fileID: 8065507197216857413}
+  combatSystem: {fileID: 4084500070042540561}
 --- !u!1001 &7268865515827309751
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1872,6 +1891,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1c2f84c0ee14894409a73a3d2e185b02, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9174542685104232593}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1c2f84c0ee14894409a73a3d2e185b02, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9007197649915887301}
   m_SourcePrefab: {fileID: 100100000, guid: 1c2f84c0ee14894409a73a3d2e185b02, type: 3}
 --- !u!4 &7163691890544757596 stripped
 Transform:
@@ -1904,6 +1926,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &9007197649915887301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7503379047862505958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9122f9f657eae6641bd44306bd1f11b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyAI: {fileID: 8065507197216857413}
+  combatSystem: {fileID: 4084500070042540561}
 --- !u!1001 &7646809856661390935
 PrefabInstance:
   m_ObjectHideFlags: 0

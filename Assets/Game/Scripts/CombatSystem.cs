@@ -34,17 +34,22 @@ public class CombatSystem : MonoBehaviour
     {
         isAttacking = true;
 
-        // Espera al frame de impacto exacto
-        yield return new WaitForSeconds(hitFrameDelay);
-
+        // Verificación doble
         if (targetHealth != null && !targetHealth.IsInvulnerable())
         {
-            targetHealth.Damage(attackDamage);
-            if (hitVFX != null) Instantiate(hitVFX, targetHealth.transform.position, Quaternion.identity);
+            // Obtener referencia al EnemyAI para verificar distancia
+            EnemyAI enemyAI = GetComponent<EnemyAI>();
+            if (enemyAI != null && enemyAI.IsTargetInAttackRange())
+            {
+                targetHealth.Damage(attackDamage);
+                if (hitVFX != null)
+                {
+                    Instantiate(hitVFX, targetHealth.transform.position, Quaternion.identity);
+                }
+            }
         }
 
-        // Tiempo restante de animaci�n
-        yield return new WaitForSeconds(attackCooldown - hitFrameDelay);
+        yield return new WaitForSeconds(attackCooldown);
         isAttacking = false;
     }
 
