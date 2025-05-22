@@ -25,6 +25,13 @@ public class PlayerController : MonoBehaviour
     [Header("Defensa")]
     private bool isDefending = false;
 
+    [Header("Dash")]
+    public float dashDistance = 5f;
+    public float dashDuration = 0.2f;
+    public float dashCooldown = 1f;
+    private bool isDashing = false;
+    private bool canDash = true;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -39,6 +46,8 @@ public class PlayerController : MonoBehaviour
         PlayerInput.OnMove += Move;
         PlayerInput.OnAttack += Attack;
         PlayerInput.OnDefend += ToggleDefense;
+        PlayerInput.OnDash += Dash;
+
     }
 
     void Update()
@@ -62,7 +71,7 @@ public class PlayerController : MonoBehaviour
     void Move(Vector2 movement)
     {
         // 1. Verificar estados que bloquean movimiento
-        if (isAttacking || isDefending || FreezzeGame.IsFrozen)
+        if (isDashing || isAttacking || isDefending || FreezzeGame.IsFrozen)
         {
             moveDirection = Vector3.zero;
             animator.SetBool("Player_isWalking", false); // Fuerza idle al pausar
@@ -198,5 +207,46 @@ public class PlayerController : MonoBehaviour
         PlayerInput.OnMove -= Move;
         PlayerInput.OnAttack -= Attack;
         PlayerInput.OnDefend -= ToggleDefense;
+    }
+
+    public void Dash()
+    {
+        if (!canDash || isDashing || FreezzeGame.IsFrozen || isAttacking || isDefending)
+            return;
+
+        StartCoroutine(DashRoutine());
+    }
+
+    private IEnumerator DashRoutine()
+    {
+        isDashing = true;
+        canDash = false;
+
+        // Guardar dirección actual
+        Vector3 dashDirection = moveDirection.normalized;
+        if (dashDirection == Vector3.zero)
+        {
+            dashDirection = transform.forward; // Por si está quieto
+        }
+
+        // Invulnerabilidad
+        healthComponent.SetInvulnerable(true);
+
+        float elapsedTime = 0f;
+        while (elapsedTime < dashDuration)
+        {
+            controller.Move(dashDirection * (dashDistance / dashDuration) * Time.deltaTime);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Fin de invulnerabilidad
+        healthComponent.SetInvulnerable(false);
+
+        isDashing = false;
+
+        // Cooldown para el siguiente dash
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 }
