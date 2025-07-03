@@ -378,9 +378,10 @@ MonoBehaviour:
   attackDamage: 15
   attackCooldown: 0.8
   comboTime: 1
-  dashDistance: 5
-  dashDuration: 0.2
+  dashDistance: 8
+  dashDuration: 0.45
   dashCooldown: 1
+  particles: []
 --- !u!114 &8176692616691342517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1939,5 +1940,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9db010b5194da41b03e9926180c21f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particleToPlay: {fileID: 6290107681634515167}
-  particleNameToFind: 
+  particles:
+  - {fileID: 6290107681634515167}

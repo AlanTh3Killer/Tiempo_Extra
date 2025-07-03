@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -32,6 +33,9 @@ public class PlayerController : MonoBehaviour
     private bool isDashing = false;
     private bool canDash = true;
 
+    [Header("Partículas")]
+    [SerializeField] private ParticleSystem[] particles;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -41,6 +45,14 @@ public class PlayerController : MonoBehaviour
         if (animator == null)
         {
             Debug.LogError("El jugador no tiene un Animator asignado.");
+        }
+
+        foreach (var ps in particles)
+        {
+            if (ps != null)
+            {
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
         }
 
         PlayerInput.OnMove += Move;
@@ -211,8 +223,19 @@ public class PlayerController : MonoBehaviour
 
     public void Dash()
     {
+        // Verificar si puede hacer dash desde condiciones de gameplay
         if (!canDash || isDashing || FreezzeGame.IsFrozen || isAttacking || isDefending)
             return;
+
+        // Nueva lógica: solo permitir el dash si está en estado de caminar
+        bool isWalking = animator.GetBool("Player_isWalking");
+        if (!isWalking)
+        {
+            Debug.Log("No puedes esquivar si no te estás moviendo.");
+            return;
+        }
+
+        animator.SetTrigger("Player_isDodging");
 
         StartCoroutine(DashRoutine());
     }
@@ -248,5 +271,17 @@ public class PlayerController : MonoBehaviour
         // Cooldown para el siguiente dash
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
+    }
+
+    public void PlayParticleByIndex(int index)
+    {
+        if (index >= 0 && index < particles.Length && particles[index] != null)
+        {
+            particles[index].Play();
+        }
+        else
+        {
+            Debug.LogWarning($"[PlayerController] No se pudo reproducir la partícula en índice {index}");
+        }
     }
 }
