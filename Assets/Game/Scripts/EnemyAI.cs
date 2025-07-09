@@ -36,8 +36,12 @@ public class EnemyAI : MonoBehaviour
 
     private void Start()
     {
-        enemyCollider = GetComponent<CapsuleCollider>(); // O Collider
-        playerCollider = GameObject.FindWithTag("Player").GetComponent<CharacterController>();
+        enemyCollider = GetComponent<Collider>();
+        playerCollider = GameObject.FindWithTag("Player").GetComponent<Collider>();
+
+        //Evita empujones y colisiones físicas sin romper daño
+        Physics.IgnoreCollision(enemyCollider, playerCollider, true);
+
         if (SoundManager.instance != null && enemyAttackSounds.Length == 0)
         {
             enemyAttackSounds = SoundManager.instance.attackSounds;
@@ -96,7 +100,7 @@ public class EnemyAI : MonoBehaviour
 
                 if (distance <= attackRange && !isDefending)
                 {
-                    Physics.IgnoreCollision(enemyCollider, playerCollider, true);
+                    //Physics.IgnoreCollision(enemyCollider, playerCollider, true);
                     isAttacking = true;
 
                     lastAttackIndex = (lastAttackIndex == 0) ? 1 : 0;
@@ -104,7 +108,7 @@ public class EnemyAI : MonoBehaviour
                     animator.SetTrigger("isAttacking");
 
                     yield return new WaitForSeconds(attackInterval);
-                    Physics.IgnoreCollision(enemyCollider, playerCollider, false);
+                    //Physics.IgnoreCollision(enemyCollider, playerCollider, false);
                     isAttacking = false;
                 }
 

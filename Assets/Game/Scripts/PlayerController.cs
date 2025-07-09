@@ -126,23 +126,28 @@ public class PlayerController : MonoBehaviour
 
     void Attack()
     {
-        // Añadir verificación de diálogos
-        if (!canAttack || isDefending || FreezzeGame.IsFrozen || FreezzeGame.IsFrozen)
+        //  Bloquear completamente si no puede atacar
+        if (!canAttack || isDefending || FreezzeGame.IsFrozen)
             return;
 
-        // --- El resto del método Attack original se mantiene ---
+        // Solo modificar combo si se va a lanzar el ataque
         if (Time.time - lastAttackTime <= comboTime)
         {
             attackIndex = (attackIndex == 0) ? 1 : 0;
         }
         else
         {
-            attackIndex = 0; // Si pasa mucho tiempo, reinicia el combo
+            attackIndex = 0; // Reinicia combo si pasó demasiado tiempo
         }
 
         animator.SetInteger("Player_AttackIndex", attackIndex);
         animator.SetTrigger("Player_Attack");
-        // Reproducir sonido de ataque desde el SoundManager
+
+        canAttack = false;
+        isAttacking = true;
+
+        animator.SetBool("Player_isInAttackCooldown", true); // Opcional visual
+
         if (SoundManager.instance != null)
         {
             SoundManager.instance.PlayRandomSFX(SoundManager.instance.attackSounds, 0.8f);
@@ -150,13 +155,9 @@ public class PlayerController : MonoBehaviour
 
         PerformAttack();
         StartCoroutine(AttackCooldown());
-
-        lastAttackTime = Time.time;
-        // Reemplázala con:
         StartCoroutine(ResetAttackState());
 
-        //  Volver a Idle después del ataque
-        //StartCoroutine(ReturnToIdleAfterAttack());
+        lastAttackTime = Time.time;
     }
 
     //  Esta corrutina esperará a que termine el ataque y regresará a Idle

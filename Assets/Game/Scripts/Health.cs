@@ -52,7 +52,7 @@ public class Health : MonoBehaviour, IDamagable
         currentHealth -= damage;
         UpdateHealthBar(); // Actualiza la barra de vida al recibir da�o
 
-        Debug.Log($"{gameObject.name} recibi� {damage} de da�o. Vida restante: {currentHealth}");
+        Debug.Log($"{gameObject.name} recibio {damage} de danio. Vida restante: {currentHealth}");
         if (!isDead && hurtSound != null)
         {
             SoundManager.instance.PlaySFX(hurtSound, 0.7f);
@@ -96,7 +96,7 @@ public class Health : MonoBehaviour, IDamagable
 
     public void Heal(int amount)
     {
-        if (isDead) return; // No curar si el personaje est� muerto
+        if (isDead) return; // No curar si el personaje esta muerto
 
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         UpdateHealthBar(); //  ACTUALIZA LA BARRA DE VIDA AL CURARSE
