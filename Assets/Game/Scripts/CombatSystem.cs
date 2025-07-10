@@ -17,6 +17,18 @@ public class CombatSystem : MonoBehaviour
     private bool isDefending = false;
     private Health healthComponent;
 
+    private bool isInAttackWindow = false;
+    private bool isInDefenseWindow = false;
+
+    public void OpenAttackWindow() => isInAttackWindow = true;
+    public void CloseAttackWindow() => isInAttackWindow = false;
+
+    public void OpenDefenseWindow() => isInDefenseWindow = true;
+    public void CloseDefenseWindow() => isInDefenseWindow = false;
+
+    public bool IsInAttackWindow() => isInAttackWindow;
+    public bool IsInDefenseWindow() => isInDefenseWindow;
+
     private void Start()
     {
         healthComponent = GetComponent<Health>();
@@ -55,10 +67,14 @@ public class CombatSystem : MonoBehaviour
 
     public void StartDefense()
     {
-        if (!isDefending)
-        {
-            StartCoroutine(PerformDefense());
-        }
+        isDefending = true;
+        isInDefenseWindow = true;
+    }
+
+    public void EndDefense()
+    {
+        isDefending = false;
+        isInDefenseWindow = false;
     }
 
     private IEnumerator PerformDefense()

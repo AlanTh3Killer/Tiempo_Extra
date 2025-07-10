@@ -146,7 +146,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Walking
+  m_Name: Walking_Player
   m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
@@ -162,7 +162,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: d0ac9313f5332ad4394c68b9f1e1273d, type: 2}
+  m_Motion: {fileID: 7400000, guid: cc1fbc550ff64ec408ef43e0781b5463, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -175,7 +175,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Punch2
+  m_Name: Punch2_Player
   m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
@@ -192,7 +192,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 2502ed252d06bb64d944632840f6fcdc, type: 2}
+  m_Motion: {fileID: 7400000, guid: 19bbf72e19a1aab41a8fc8841324d83d, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -230,7 +230,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Block
+  m_Name: Block_Player
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -246,7 +246,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: f004cc9e0db8b20439553adfbafb8de3, type: 2}
+  m_Motion: {fileID: 7400000, guid: 4ad76f68f4d944749b524d8ea1960911, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -391,7 +391,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Dodging
+  m_Name: Dodging_Player
   m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
@@ -887,7 +887,7 @@ AnimatorStateMachine:
     m_Position: {x: 140, y: 290, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5653382930383323624}
-    m_Position: {x: 493.14868, y: 171.77113, z: 0}
+    m_Position: {x: 490, y: 170, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2841787626088161584}
     m_Position: {x: 50, y: 640, z: 0}
@@ -955,7 +955,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Idle
+  m_Name: Idle_Player
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -972,7 +972,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 4e8b22ac6adf0da4aa7049a70fc7f0d1, type: 2}
+  m_Motion: {fileID: 7400000, guid: 7244d3598ea2db44b9492801caeb05cb, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -985,7 +985,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Punch1
+  m_Name: Punch1_Player
   m_Speed: 1.5
   m_CycleOffset: 0
   m_Transitions:
@@ -1002,7 +1002,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: af6a44fb18c5a394688c6e057d429a3d, type: 2}
+  m_Motion: {fileID: 7400000, guid: 4a2e1c579509f0d4da34cf1e1deabe6e, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

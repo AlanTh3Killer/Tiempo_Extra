@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Punch2
+  m_Name: Punch2_Player
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -30251,13 +30251,6 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0
-    functionName: OpenAttackWindow
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
   - time: 0.06666667
     functionName: PlayAttackWindupSound
     data: 
@@ -30274,13 +30267,6 @@ AnimationClip:
     messageOptions: 0
   - time: 0.23333333
     functionName: PlayAttackImpactSound
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.26666668
-    functionName: CloseAttackWindow
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

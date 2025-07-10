@@ -19,4 +19,11 @@ public class EnemyAnimationHelper : MonoBehaviour
     public void PlayAttackWindupSound() => enemyAI?.PlayAttackWindupSound();
     public void PlayAttackImpactSound() => enemyAI?.PlayAttackImpactSound();
     public void ExecuteDamage() => enemyAI?.ExecuteDamage();
+
+    public void OpenAttackWindow() => combatSystem?.OpenAttackWindow();
+    public void CloseAttackWindow() => combatSystem?.CloseAttackWindow();
+
+    public void OpenDefenseWindow() => combatSystem?.OpenDefenseWindow();
+    public void CloseDefenseWindow() => combatSystem?.CloseDefenseWindow();
+
 }

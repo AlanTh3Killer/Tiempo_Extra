@@ -220,6 +220,7 @@ public class PlayerController : MonoBehaviour
         PlayerInput.OnMove -= Move;
         PlayerInput.OnAttack -= Attack;
         PlayerInput.OnDefend -= ToggleDefense;
+        PlayerInput.OnDash -= Dash;
     }
 
     public void Dash()

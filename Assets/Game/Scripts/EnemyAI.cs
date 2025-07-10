@@ -125,17 +125,20 @@ public class EnemyAI : MonoBehaviour
     {
         isDefending = true;
         agent.isStopped = true;
+
         combatSystem.StartDefense();
         healthComponent.SetInvulnerable(true);
 
         animator.SetBool("isDefending", true);
-
         Debug.Log($"{gameObject.name}: Defendiéndose");
+
         yield return new WaitForSeconds(defenseDuration);
+
+        combatSystem.EndDefense();                    
+        healthComponent.SetInvulnerable(false);
 
         isDefending = false;
         agent.isStopped = false;
-        healthComponent.SetInvulnerable(false);
 
         animator.SetBool("isDefending", false);
         Debug.Log($"{gameObject.name}: Terminó la defensa");
@@ -193,13 +196,26 @@ public class EnemyAI : MonoBehaviour
 
             if (currentDistance <= attackRange * 1.2f) // 20% de margen adicional
             {
-                combatSystem.Attack(target.GetComponent<Health>());
-                Debug.Log("¡Golpe conectado!");
+                var targetHealth = target.GetComponent<Health>();
+                if (targetHealth != null && !targetHealth.IsInvulnerable())
+                {
+                    if (combatSystem.IsInAttackWindow())
+                    {
+                        combatSystem.Attack(targetHealth);
+                        Debug.Log("¡Golpe conectado dentro de ventana!");
+                    }
+                    else
+                    {
+                        Debug.Log("Estás fuera de la ventana de ataque.");
+                    }
+                }
+                //combatSystem.Attack(target.GetComponent<Health>());
+                //Debug.Log("¡Golpe conectado!");
             }
-            else
-            {
-                Debug.Log("Golpe fallado: jugador fuera de rango");
-            }
+            //else
+            //{
+            //    Debug.Log("Golpe fallado: jugador fuera de rango");
+            //}
         }
     }
 

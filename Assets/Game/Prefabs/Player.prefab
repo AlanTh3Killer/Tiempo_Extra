@@ -381,7 +381,8 @@ MonoBehaviour:
   dashDistance: 8
   dashDuration: 0.45
   dashCooldown: 1
-  particles: []
+  particles:
+  - {fileID: 6290107681634515167}
 --- !u!114 &8176692616691342517
 MonoBehaviour:
   m_ObjectHideFlags: 0
