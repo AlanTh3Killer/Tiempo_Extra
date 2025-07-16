@@ -873,8 +873,20 @@ PrefabInstance:
       value: EL FEDE
       objectReference: {fileID: 0}
     - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 804577f3e14c3e64b8e3d7c598eabe64, type: 2}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -4907745106509522452, guid: 804577f3e14c3e64b8e3d7c598eabe64, type: 2}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
       propertyPath: m_HorizontalAlignment
-      value: 16
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13887,6 +13899,14 @@ PrefabInstance:
       propertyPath: gameOverPanel
       value: 
       objectReference: {fileID: 1842104775}
+    - target: {fileID: 1147245566266331131, guid: c4af7c2222fe32e408247b53e2ca64e0, type: 3}
+      propertyPath: m_fontSize
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1147245566266331131, guid: c4af7c2222fe32e408247b53e2ca64e0, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2746683301227228321, guid: c4af7c2222fe32e408247b53e2ca64e0, type: 3}
       propertyPath: m_Color.b
       value: 0.83

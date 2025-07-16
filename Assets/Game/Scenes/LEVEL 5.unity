@@ -1106,12 +1106,32 @@ PrefabInstance:
       value: TITA
       objectReference: {fileID: 0}
     - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_fontSize
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 804577f3e14c3e64b8e3d7c598eabe64, type: 2}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
       propertyPath: m_fontStyle
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -4907745106509522452, guid: 804577f3e14c3e64b8e3d7c598eabe64, type: 2}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
       propertyPath: m_HorizontalAlignment
-      value: 16
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1315,12 +1335,32 @@ PrefabInstance:
       value: TITO
       objectReference: {fileID: 0}
     - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_fontSize
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 804577f3e14c3e64b8e3d7c598eabe64, type: 2}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
       propertyPath: m_fontStyle
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -4907745106509522452, guid: 804577f3e14c3e64b8e3d7c598eabe64, type: 2}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
       propertyPath: m_HorizontalAlignment
-      value: 16
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950300164024638426, guid: c8331b607361e954aaf0608a10f797bd, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
