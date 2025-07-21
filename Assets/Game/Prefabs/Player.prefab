@@ -275,6 +275,7 @@ GameObject:
   - component: {fileID: 826755378780962214}
   - component: {fileID: 8115531999138419698}
   - component: {fileID: 8176692616691342517}
+  - component: {fileID: 90886449825247272}
   - component: {fileID: 8415293220391785093}
   m_Layer: 3
   m_Name: Player
@@ -338,7 +339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f7a9bb6dc8f1ee43ae6f77cc31fd3c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 90
+  maxHealth: 75
   currentHealth: 0
   onDeath:
     m_PersistentCalls:
@@ -396,6 +397,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputEnabled: 1
+--- !u!114 &90886449825247272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2923005791949602849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0787bcb14d6c3724f91935a8743df623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!135 &8415293220391785093
 SphereCollider:
   m_ObjectHideFlags: 0

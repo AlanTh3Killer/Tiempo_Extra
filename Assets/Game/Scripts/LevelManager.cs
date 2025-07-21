@@ -18,10 +18,22 @@ public class LevelManager : MonoBehaviour
     public GameObject levelCompletePanel; // Panel de "Nivel Completado"
     public float levelCompleteDelay = 2f; // Tiempo antes de cambiar de nivel
 
+    [Header("Pausa")]
+    public GameObject pausePanel;
+    public GameObject resumePanel;
+    public float resumeDelay = 1.5f;
+
+    private bool isPaused = false;
     private int totalEnemies;
 
     private void Start()
     {
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        if (resumePanel != null)
+            resumePanel.SetActive(false);
+
         if (SceneManager.GetActiveScene().buildIndex == 3 && tutorialPanel != null) // Asumiendo que el primer nivel es buildIndex 1
         {
             StartCoroutine(ShowTutorial());
@@ -48,6 +60,48 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!isPaused)
+            {
+                PauseGame();
+            }
+            else
+            {
+                StartCoroutine(ResumeSequence());
+            }
+        }
+    }
+
+    private void PauseGame()
+    {
+        Debug.Log("Juego Pausado");
+        isPaused = true;
+        pausePanel.SetActive(true);
+
+        FreezzeGame.SetLevelUIPanelActive(true);
+    }
+
+    private IEnumerator ResumeSequence()
+    {
+        Debug.Log("Reanudando...");
+        pausePanel.SetActive(false);
+
+        yield return new WaitForSecondsRealtime(resumeDelay);
+
+        if (resumePanel != null)
+        {
+            resumePanel.SetActive(true);
+            yield return new WaitForSecondsRealtime(1f);
+            resumePanel.SetActive(false);
+        }
+
+        isPaused = false;
+        FreezzeGame.SetLevelUIPanelActive(false);
+    }
+
     private IEnumerator ShowTutorial()
     {
         tutorialPanel.SetActive(true);
@@ -70,6 +124,7 @@ public class LevelManager : MonoBehaviour
     {
         totalEnemies--;
         Debug.Log($"Enemigos restantes: {totalEnemies}");
+        FindObjectOfType<PlayerBuffManager>().ApplyRandomBuff();
 
         if (totalEnemies <= 0)
         {
