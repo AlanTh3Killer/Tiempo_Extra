@@ -48,8 +48,8 @@ GameObject:
   - component: {fileID: 442029784829264289}
   - component: {fileID: 1588078371804610412}
   - component: {fileID: 8065507197216857413}
-  - component: {fileID: 5062438930323078489}
   - component: {fileID: 4084500070042540561}
+  - component: {fileID: 5062438930323078489}
   m_Layer: 6
   m_Name: Enemy(fast)
   m_TagString: Enemy
@@ -159,7 +159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f7a9bb6dc8f1ee43ae6f77cc31fd3c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 60
+  maxHealth: 150
   currentHealth: 0
   onDeath:
     m_PersistentCalls:
@@ -200,13 +200,30 @@ MonoBehaviour:
   agent: {fileID: 5062438930323078489}
   combatSystem: {fileID: 4084500070042540561}
   attackInterval: 0.8
-  defenseDuration: 0.7
+  defenseDuration: 0.22
   animator: {fileID: 7093585544766081977}
   enemyAttackSounds:
   - {fileID: 8300000, guid: b6306e13e9ede994a81452e3f402b82b, type: 3}
   - {fileID: 8300000, guid: bd927c8c94c0ccf4c8c28f01a5eff54d, type: 3}
   - {fileID: 8300000, guid: df51db8172c0d914d93d1bac4aad7211, type: 3}
   deathAnimationExtraTime: 1.5
+--- !u!114 &4084500070042540561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2727241248152747288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9581287689533d4458b6de06342e960d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitFrameDelay: 0.3
+  hitVFX: {fileID: 0}
+  attackDamage: 12
+  attackCooldown: 0.3
+  defenseDuration: 0.1
 --- !u!195 &5062438930323078489
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -229,23 +246,6 @@ NavMeshAgent:
   m_BaseOffset: 0.99
   m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
---- !u!114 &4084500070042540561
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2727241248152747288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9581287689533d4458b6de06342e960d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hitFrameDelay: 0.3
-  hitVFX: {fileID: 0}
-  attackDamage: 12
-  attackCooldown: 0.5
-  defenseDuration: 0.5
 --- !u!1 &3112345625366790433
 GameObject:
   m_ObjectHideFlags: 0

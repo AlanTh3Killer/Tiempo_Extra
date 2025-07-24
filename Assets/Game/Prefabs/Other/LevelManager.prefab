@@ -45,9 +45,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89607b3f93a7ccc49aa816aedee7f0b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialPanel: {fileID: 0}
+  tutorialTime: 5
+  nextSceneName: PlayGround2
+  levelStartPanel: {fileID: 0}
+  startMessageTime: 3
   levelCompletePanel: {fileID: 0}
   levelCompleteDelay: 5
-  nextSceneName: PlayGround2
+  pausePanel: {fileID: 0}
+  resumePanel: {fileID: 0}
+  resumeDelay: 0.1
 --- !u!114 &1184877250847820683
 MonoBehaviour:
   m_ObjectHideFlags: 0

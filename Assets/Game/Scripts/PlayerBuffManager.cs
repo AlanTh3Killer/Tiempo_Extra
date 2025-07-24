@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class PlayerBuffManager : MonoBehaviour
 {
+    [Header("VFX")]
+    [SerializeField] private GameObject[] buffParticles; // 0 = velocidad, 1 = cooldown ataque, 2 = cooldown dash
+    [SerializeField] private Transform vfxSpawnPoint;
+
     [Header("Referencias")]
-    private PlayerController playerController;
+    [SerializeField] private PlayerController playerController;
 
     private void Awake()
     {
@@ -65,18 +69,47 @@ public class PlayerBuffManager : MonoBehaviour
         {
             case 0:
                 ApplySpeedBuff(1.3f, 5f);  // +30% velocidad durante 5 segundos
+                SpawnBuffVFX(0);
                 Debug.Log("Buff aplicado: Velocidad aumentada");
                 break;
 
             case 1:
                 ApplyAttackCooldownBuff(0.5f, 5f);  // 50% menos cooldown de ataque durante 5 segundos
+                SpawnBuffVFX(1);
                 Debug.Log("Buff aplicado: Reducción cooldown ataque");
                 break;
 
             case 2:
                 ApplyDashCooldownBuff(0.5f, 5f);  // 50% menos cooldown de dash durante 5 segundos
+                SpawnBuffVFX(2);
                 Debug.Log("Buff aplicado: Reducción cooldown dash");
                 break;
+        }
+    }
+
+    private void SpawnBuffVFX(int index)
+    {
+        if (buffParticles != null && index >= 0 && index < buffParticles.Length && buffParticles[index] != null)
+        {
+            // Instanciamos como hijo del punto de aparición (para que siga al jugador)
+            GameObject vfxInstance = Instantiate(
+                buffParticles[index],
+                vfxSpawnPoint.position,
+                Quaternion.identity,
+                vfxSpawnPoint // Lo hace hijo para que se mueva con el jugador
+            );
+
+            // Buscamos el sistema de partículas dentro del prefab instanciado
+            ParticleSystem ps = vfxInstance.GetComponentInChildren<ParticleSystem>();
+            if (ps != null)
+            {
+                float duration = ps.main.duration + ps.main.startLifetime.constantMax;
+                Destroy(vfxInstance, duration); // Se destruye cuando termina la animación
+            }
+            else
+            {
+                Destroy(vfxInstance, 2f); // Fallback: destruir tras 2 segundos si no hay ParticleSystem
+            }
         }
     }
 
