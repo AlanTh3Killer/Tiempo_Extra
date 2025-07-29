@@ -1,7 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
@@ -26,6 +26,9 @@ public class LevelManager : MonoBehaviour
     private bool isPaused = false;
     private int totalEnemies;
 
+    [SerializeField] private DialogueController dialogueController;
+    [SerializeField] private DialogueLines dialogueLines; // Asignar desde inspector
+
     private void Start()
     {
         if (pausePanel != null)
@@ -43,6 +46,17 @@ public class LevelManager : MonoBehaviour
         totalEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
         Debug.Log($"Enemigos en nivel: {totalEnemies}");
 
+        if (SceneManager.GetActiveScene().buildIndex == 3 && tutorialPanel != null)
+        {
+            StartCoroutine(ShowTutorial());
+        }
+
+        // Mostrar diálogo de inicio (en vez del panel directo)
+        if (dialogueLines != null && dialogueLines.startDialogue.Count > 0)
+        {
+            dialogueController.ShowDialogue(DialogueController.DialogueType.LevelStart, dialogueLines.startDialogue);
+        }
+
         // Mostrar mensaje inicial
         if (levelStartPanel != null)
         {
@@ -57,6 +71,17 @@ public class LevelManager : MonoBehaviour
         if (levelCompletePanel != null)
         {
             levelCompletePanel.SetActive(false);
+        }
+
+        if (dialogueController != null)
+        {
+            dialogueController.ShowDialogue(DialogueController.DialogueType.LevelStart, new List<string>
+    {
+        "¡Hola!",
+        "Bienvenido a tu primer combate.",
+        "Recuerda que puedes esquivar usando Shift.",
+        "¡Buena suerte!"
+    });
         }
     }
 
@@ -128,7 +153,14 @@ public class LevelManager : MonoBehaviour
 
         if (totalEnemies <= 0)
         {
-            StartCoroutine(LevelCompleted());
+            if (dialogueLines != null && dialogueLines.endDialogue.Count > 0)
+            {
+                dialogueController.ShowDialogue(DialogueController.DialogueType.LevelEnd, dialogueLines.endDialogue);
+            }
+            else
+            {
+                StartCoroutine(LevelCompleted());
+            }
         }
     }
 
