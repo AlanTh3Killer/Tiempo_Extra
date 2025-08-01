@@ -1,13 +1,14 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
-    [Header("Tutorial")]
-    public GameObject tutorialPanel;
-    public float tutorialTime = 5f;
+    //[Header("Tutorial")]
+    //public GameObject tutorialPanel;
+    //public float tutorialTime = 5f;
 
     [Header("Configuración de Nivel")]
     public string nextSceneName; // Nombre de la siguiente escena
@@ -26,30 +27,40 @@ public class LevelManager : MonoBehaviour
     private bool isPaused = false;
     private int totalEnemies;
 
+    [Header("Dialogo")]
     [SerializeField] private DialogueController dialogueController;
     [SerializeField] private DialogueLines dialogueLines; // Asignar desde inspector
 
     private void Start()
     {
+        //if (SceneManager.GetActiveScene().name == "LEVEL 1" && tutorialPanel != null)
+        //{
+        //    StartCoroutine(ShowTutorial());
+        //}
+
+        //if (SceneManager.GetActiveScene().name == "LEVEL 1" && tutorialPanel != null)
+        //{
+        //    StartCoroutine(ShowTutorialThenDialogue());
+        //}
+        //else
+        //{
+        //    // Si no es el primer nivel, puedes iniciar el diálogo directamente
+        //    if (dialogueLines != null && dialogueLines.startDialogue.Count > 0)
+        //    {
+        //        dialogueController.ShowDialogue(DialogueController.DialogueType.LevelStart, dialogueLines.startDialogue);
+        //    }
+        //}
+
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
         if (resumePanel != null)
             resumePanel.SetActive(false);
 
-        if (SceneManager.GetActiveScene().buildIndex == 3 && tutorialPanel != null) // Asumiendo que el primer nivel es buildIndex 1
-        {
-            StartCoroutine(ShowTutorial());
-        }
-
         // Contar enemigos al inicio
         totalEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
         Debug.Log($"Enemigos en nivel: {totalEnemies}");
 
-        if (SceneManager.GetActiveScene().buildIndex == 3 && tutorialPanel != null)
-        {
-            StartCoroutine(ShowTutorial());
-        }
 
         // Mostrar diálogo de inicio (en vez del panel directo)
         if (dialogueLines != null && dialogueLines.startDialogue.Count > 0)
@@ -58,14 +69,14 @@ public class LevelManager : MonoBehaviour
         }
 
         // Mostrar mensaje inicial
-        if (levelStartPanel != null)
-        {
-            StartCoroutine(ShowStartMessage());
-        }
-        else
-        {
-            Debug.LogWarning("No hay panel de inicio asignado");
-        }
+        //if (levelStartPanel != null)
+        //{
+        //    StartCoroutine(ShowStartMessage());
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("No hay panel de inicio asignado");
+        //}
 
         // Ocultar panel de completado (si existe)
         if (levelCompletePanel != null)
@@ -73,16 +84,6 @@ public class LevelManager : MonoBehaviour
             levelCompletePanel.SetActive(false);
         }
 
-        if (dialogueController != null)
-        {
-            dialogueController.ShowDialogue(DialogueController.DialogueType.LevelStart, new List<string>
-    {
-        "¡Hola!",
-        "Bienvenido a tu primer combate.",
-        "Recuerda que puedes esquivar usando Shift.",
-        "¡Buena suerte!"
-    });
-        }
     }
 
     private void Update()
@@ -127,12 +128,30 @@ public class LevelManager : MonoBehaviour
         FreezzeGame.SetLevelUIPanelActive(false);
     }
 
-    private IEnumerator ShowTutorial()
-    {
-        tutorialPanel.SetActive(true);
-        yield return new WaitForSeconds(tutorialTime);
-        tutorialPanel.SetActive(false);
-    }
+    //private IEnumerator ShowTutorialThenDialogue()
+    //{
+    //    // Muestra el panel tutorial (sin congelar el tiempo)
+    //    tutorialPanel.SetActive(true);
+    //    Debug.Log("Mostrando tutorial");
+
+    //    yield return new WaitForSeconds(tutorialTime); // Esto funciona porque aún no se congeló el tiempo
+
+    //    tutorialPanel.SetActive(false);
+
+    //    // Ahora sí, inicia el diálogo que congela el juego
+    //    if (dialogueLines != null && dialogueLines.startDialogue.Count > 0)
+    //    {
+    //        dialogueController.ShowDialogue(DialogueController.DialogueType.LevelStart, dialogueLines.startDialogue);
+    //    }
+    //}
+
+    //private IEnumerator ShowTutorial()
+    //{
+    //    Debug.Log("Mostrando tutorial");
+    //    tutorialPanel.SetActive(true);
+    //    yield return new WaitForSeconds(tutorialTime);
+    //    tutorialPanel.SetActive(false);
+    //}
 
     // Corrutina para mensaje inicial
     private IEnumerator ShowStartMessage()
@@ -150,11 +169,16 @@ public class LevelManager : MonoBehaviour
         totalEnemies--;
         Debug.Log($"Enemigos restantes: {totalEnemies}");
         FindObjectOfType<PlayerBuffManager>().ApplyRandomBuff();
-
         if (totalEnemies <= 0)
         {
             if (dialogueLines != null && dialogueLines.endDialogue.Count > 0)
             {
+                // Asigna el callback solo para este diálogo
+                dialogueController.OnDialogueFinished = () =>
+                {
+                    StartCoroutine(LevelCompleted());
+                };
+
                 dialogueController.ShowDialogue(DialogueController.DialogueType.LevelEnd, dialogueLines.endDialogue);
             }
             else
@@ -162,6 +186,17 @@ public class LevelManager : MonoBehaviour
                 StartCoroutine(LevelCompleted());
             }
         }
+        //if (totalEnemies <= 0)
+        //{
+        //    if (dialogueLines != null && dialogueLines.endDialogue.Count > 0)
+        //    {
+        //        dialogueController.ShowDialogue(DialogueController.DialogueType.LevelEnd, dialogueLines.endDialogue);
+        //    }
+        //    else
+        //    {
+        //        StartCoroutine(LevelCompleted());
+        //    }
+        //}
     }
 
     private IEnumerator LevelCompleted()

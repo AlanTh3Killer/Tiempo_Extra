@@ -1,18 +1,21 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class DialogueController : MonoBehaviour
 {
+    public Action OnDialogueFinished;
+
     // Referencias asignadas desde el inspector
     [Header("Paneles de diálogo")]
-    [SerializeField] private GameObject tutorialPanel;
+    //[SerializeField] private GameObject tutorialPanel;
     [SerializeField] private GameObject levelStartPanel;
     [SerializeField] private GameObject levelEndPanel;
 
     [Header("Textos")]
-    [SerializeField] private TMP_Text tutorialText;
+    //[SerializeField] private TMP_Text tutorialText;
     [SerializeField] private TMP_Text startText;
     [SerializeField] private TMP_Text endText;
 
@@ -33,9 +36,7 @@ public class DialogueController : MonoBehaviour
             }
             else
             {
-                currentPanel.SetActive(false);
-                currentLines.Clear();
-                FreezzeGame.EndDialogue(); // Descongela el juego al finalizar diálogo
+                EndDialogue();
             }
         }
     }
@@ -52,7 +53,7 @@ public class DialogueController : MonoBehaviour
         FreezzeGame.StartDialogue();
 
         // Desactiva todos los paneles
-        tutorialPanel.SetActive(false);
+        //tutorialPanel.SetActive(false);
         levelStartPanel.SetActive(false);
         levelEndPanel.SetActive(false);
 
@@ -61,10 +62,10 @@ public class DialogueController : MonoBehaviour
 
         switch (type)
         {
-            case DialogueType.Tutorial:
-                currentText = tutorialText;
-                currentPanel = tutorialPanel;
-                break;
+            //case DialogueType.Tutorial:
+            //    currentText = tutorialText;
+            //    currentPanel = tutorialPanel;
+            //    break;
             case DialogueType.LevelStart:
                 currentText = startText;
                 currentPanel = levelStartPanel;
@@ -79,9 +80,21 @@ public class DialogueController : MonoBehaviour
         currentText.text = currentLines[0];
     }
 
+    private void EndDialogue()
+    {
+        if (currentPanel != null)
+            currentPanel.SetActive(false);
+
+        // Descongela el juego al terminar el diálogo
+        FreezzeGame.EndDialogue();
+
+        if (OnDialogueFinished != null)
+            OnDialogueFinished.Invoke();
+    }
+
     public enum DialogueType
     {
-        Tutorial,
+        //Tutorial,
         LevelStart,
         LevelEnd
     }
