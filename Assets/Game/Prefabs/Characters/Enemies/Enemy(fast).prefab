@@ -198,6 +198,7 @@ MonoBehaviour:
   activationRange: 28.8
   attackRange: 2
   agent: {fileID: 5062438930323078489}
+  rotationSpeed: 18
   combatSystem: {fileID: 4084500070042540561}
   attackInterval: 0.8
   defenseDuration: 0.22

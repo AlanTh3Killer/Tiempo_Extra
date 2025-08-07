@@ -12,6 +12,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float activationRange = 10f;
     [SerializeField] private float attackRange = 2.5f;
     [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private float rotationSpeed = 10f; 
 
     [Header("Combate")]
     [SerializeField] private CombatSystem combatSystem;
@@ -39,8 +40,9 @@ public class EnemyAI : MonoBehaviour
         enemyCollider = GetComponent<Collider>();
         playerCollider = GameObject.FindWithTag("Player").GetComponent<Collider>();
 
-        //Evita empujones y colisiones físicas sin romper daño
-        Physics.IgnoreCollision(enemyCollider, playerCollider, true);
+        //VersionVieja
+        ////Evita empujones y colisiones físicas sin romper daño
+        //Physics.IgnoreCollision(enemyCollider, playerCollider, true);
 
         if (SoundManager.instance != null && enemyAttackSounds.Length == 0)
         {
@@ -56,7 +58,9 @@ public class EnemyAI : MonoBehaviour
             animator = GetComponentInChildren<Animator>();
         }
 
-        agent.stoppingDistance = stoppingDistance;
+        agent.stoppingDistance = Mathf.Max(stoppingDistance, 1.5f);
+        //Version Vieja
+        //agent.stoppingDistance = stoppingDistance;
         StartCoroutine(CombatLoop());
     }
 
@@ -68,7 +72,22 @@ public class EnemyAI : MonoBehaviour
 
         if (isTargetDetected && target != null && !isDefending && !isAttacking)
         {
-            FollowPlayer();
+            //Antigua logica, solo esto
+            //FollowPlayer();
+
+            // Rotar hacia el jugador
+            Vector3 direction = (target.position - transform.position).normalized;
+            direction.y = 0; // evitar inclinación vertical
+            if (direction != Vector3.zero)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
+            }
+
+            if (!isDefending && !isAttacking)
+            {
+                FollowPlayer();
+            }
         }
 
         bool isMoving = agent.velocity.magnitude > 0.1f;
@@ -86,7 +105,21 @@ public class EnemyAI : MonoBehaviour
         if (!isAttacking && !isDefending)
         {
             agent.isStopped = false;
-            agent.SetDestination(target.position);
+            //Version Vieja
+            //agent.SetDestination(target.position);
+
+            // Dirección hacia el jugador
+            Vector3 dirToPlayer = (target.position - transform.position).normalized;
+
+            // Distancia mínima de seguridad (configurable por inspector)
+            float safeDistance = Mathf.Max(attackRange * 0.8f, 1.0f);
+
+            // Punto objetivo justo antes de entrar en rango de ataque
+            Vector3 stopPosition = target.position - dirToPlayer * safeDistance;
+
+            // Mover agente al punto calculado
+            agent.SetDestination(stopPosition);
+            //agent.SetDestination(targetPosition);
         }
     }
 
@@ -100,6 +133,13 @@ public class EnemyAI : MonoBehaviour
 
                 if (distance <= attackRange && !isDefending)
                 {
+                    Vector3 attackDir = (target.position - transform.position).normalized;
+                    attackDir.y = 0;
+                    if (attackDir != Vector3.zero)
+                    {
+                        transform.rotation = Quaternion.LookRotation(attackDir);
+                    }
+
                     //Physics.IgnoreCollision(enemyCollider, playerCollider, true);
                     isAttacking = true;
 
@@ -193,25 +233,56 @@ public class EnemyAI : MonoBehaviour
         {
             // Verificación adicional de rango
             float currentDistance = Vector3.Distance(transform.position, target.position);
+            if (currentDistance > attackRange * 1.2f) return;
 
-            if (currentDistance <= attackRange * 1.2f) // 20% de margen adicional
+            // 2. Comprobar si está en el campo de visión
+            Vector3 dirToTarget = (target.position - transform.position).normalized;
+            float angle = Vector3.Angle(transform.forward, dirToTarget);
+            if (angle > 45f) // 45 grados hacia cada lado
             {
-                var targetHealth = target.GetComponent<Health>();
-                if (targetHealth != null && !targetHealth.IsInvulnerable())
-                {
-                    if (combatSystem.IsInAttackWindow())
-                    {
-                        combatSystem.Attack(targetHealth);
-                        Debug.Log("¡Golpe conectado dentro de ventana!");
-                    }
-                    else
-                    {
-                        Debug.Log("Estás fuera de la ventana de ataque.");
-                    }
-                }
-                //combatSystem.Attack(target.GetComponent<Health>());
-                //Debug.Log("¡Golpe conectado!");
+                Debug.Log("Jugador fuera del ángulo de ataque");
+                return;
             }
+
+            // 3. Raycast para comprobar obstrucciones
+            if (Physics.Raycast(transform.position + Vector3.up, dirToTarget, out RaycastHit hit, attackRange * 1.2f))
+            {
+                if (!hit.collider.CompareTag("Player"))
+                {
+                    Debug.Log("Ataque bloqueado por un obstáculo");
+                    return;
+                }
+            }
+
+            // 4. Aplicar daño si todo está bien
+            var targetHealth = target.GetComponent<Health>();
+            if (targetHealth != null && !targetHealth.IsInvulnerable() && combatSystem.IsInAttackWindow())
+            {
+                combatSystem.Attack(targetHealth);
+                Debug.Log("¡Golpe conectado!");
+            }
+
+            //Version vieja, NO IGNORAR
+            //if (currentDistance <= attackRange * 1.2f) // 20% de margen adicional
+            //{
+            //    var targetHealth = target.GetComponent<Health>();
+            //    if (targetHealth != null && !targetHealth.IsInvulnerable())
+            //    {
+            //        if (combatSystem.IsInAttackWindow())
+            //        {
+            //            combatSystem.Attack(targetHealth);
+            //            Debug.Log("¡Golpe conectado dentro de ventana!");
+            //        }
+            //        else
+            //        {
+            //            Debug.Log("Estás fuera de la ventana de ataque.");
+            //        }
+            //    }
+            //    //combatSystem.Attack(target.GetComponent<Health>());
+            //    //Debug.Log("¡Golpe conectado!");
+            //}
+
+            //Ignorar
             //else
             //{
             //    Debug.Log("Golpe fallado: jugador fuera de rango");

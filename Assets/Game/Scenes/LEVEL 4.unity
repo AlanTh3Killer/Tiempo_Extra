@@ -2418,11 +2418,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6500204058104089256, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
       propertyPath: m_fontSize
-      value: 69.75
+      value: 46.8
       objectReference: {fileID: 0}
     - target: {fileID: 6500204058104089256, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
       propertyPath: m_margin.y
       value: 124.511215
+      objectReference: {fileID: 0}
+    - target: {fileID: 6500204058104089256, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 46.8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
