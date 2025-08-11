@@ -3376,10 +3376,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelStartPanel
       objectReference: {fileID: 0}
-    - target: {fileID: 3550087569250455186, guid: 5c20da59dfe4c6d4a98631c22f9b7277, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15125,10 +15121,6 @@ PrefabInstance:
     - target: {fileID: 6410827554698029963, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
       propertyPath: m_Name
       value: NextLevelPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 6410827554698029963, guid: 4923d08a2693cfd4cac2536ed4a25538, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
