@@ -152,7 +152,8 @@ public class EnemyAI : MonoBehaviour
                     isAttacking = false;
                 }
 
-                if (!isAttacking)
+                // Dentro de CombatLoop()
+                if (!isAttacking && !isDefending)
                 {
                     StartCoroutine(Defend());
                 }
@@ -254,13 +255,22 @@ public class EnemyAI : MonoBehaviour
                 }
             }
 
-            // 4. Aplicar daño si todo está bien
+            // 4) Llamar SIEMPRE a Attack(); Health decidirá sangre vs bloqueo
             var targetHealth = target.GetComponent<Health>();
-            if (targetHealth != null && !targetHealth.IsInvulnerable() && combatSystem.IsInAttackWindow())
+            if (targetHealth != null && combatSystem.IsInAttackWindow())
             {
+                Debug.Log($"[{name}] ExecuteDamage -> Attack() (Player invuln={targetHealth.IsInvulnerable()})");
                 combatSystem.Attack(targetHealth);
-                Debug.Log("¡Golpe conectado!");
             }
+
+            //Posiblemente sirva conservar
+            //// 4. Aplicar daño si todo está bien
+            //var targetHealth = target.GetComponent<Health>();
+            //if (targetHealth != null && !targetHealth.IsInvulnerable() && combatSystem.IsInAttackWindow())
+            //{
+            //    combatSystem.Attack(targetHealth);
+            //    Debug.Log("¡Golpe conectado!");
+            //}
 
             //Version vieja, NO IGNORAR
             //if (currentDistance <= attackRange * 1.2f) // 20% de margen adicional

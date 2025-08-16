@@ -46,20 +46,43 @@ public class CombatSystem : MonoBehaviour
     {
         isAttacking = true;
 
-        // Verificación doble
-        if (targetHealth != null && !targetHealth.IsInvulnerable())
+        if (targetHealth != null)
         {
-            // Obtener referencia al EnemyAI para verificar distancia
+            // Verificar rango
             EnemyAI enemyAI = GetComponent<EnemyAI>();
-            if (enemyAI != null && enemyAI.IsTargetInAttackRange())
+            bool inRange = (enemyAI == null || enemyAI.IsTargetInAttackRange());
+
+            if (inRange)
             {
+                Debug.Log($"[{gameObject.name}] intentando dañar a {targetHealth.gameObject.name}");
+
+                // Llamamos SIEMPRE a Damage()
                 targetHealth.Damage(attackDamage);
+
+                // VFX opcional (solo si quieres uno genérico de impacto del enemigo)
                 if (hitVFX != null)
                 {
                     Instantiate(hitVFX, targetHealth.transform.position, Quaternion.identity);
                 }
             }
         }
+        //Logica vieja
+        //// Verificación doble
+        //if (targetHealth != null && !targetHealth.IsInvulnerable())
+        //{
+        //    // Obtener referencia al EnemyAI para verificar distancia
+        //    EnemyAI enemyAI = GetComponent<EnemyAI>();
+        //    if (enemyAI != null && enemyAI.IsTargetInAttackRange())
+        //    {
+        //        targetHealth.Damage(attackDamage);
+        //        Debug.Log($"[{gameObject.name}] intentando dañar a {targetHealth.gameObject.name}");
+
+        //        if (hitVFX != null)
+        //        {
+        //            Instantiate(hitVFX, targetHealth.transform.position, Quaternion.identity);
+        //        }
+        //    }
+        //}
 
         yield return new WaitForSeconds(attackCooldown);
         isAttacking = false;

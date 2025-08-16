@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &121427030087249492
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3715984440815094036}
+  m_Layer: 3
+  m_Name: BlockPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3715984440815094036
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 121427030087249492}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.49, z: 0.49}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4344361282828841681}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &357486769919864826
 GameObject:
   m_ObjectHideFlags: 0
@@ -299,6 +330,7 @@ Transform:
   m_Children:
   - {fileID: 8260566863218464819}
   - {fileID: 8246948364306715983}
+  - {fileID: 3715984440815094036}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &1303728231965367872
@@ -361,6 +393,9 @@ MonoBehaviour:
   gameOverDelay: 2
   healthBar: {fileID: 4948242570400537654}
   hurtSound: {fileID: 8300000, guid: db3736a6b63e9564ca569770d58d796a, type: 3}
+  blockParticle: {fileID: 7528446584150380748, guid: 324565463188300408aea8b952d84c0c, type: 3}
+  bloodParticle: {fileID: 1486879688712331767, guid: 47298e5a3d1b04b4fba7984db0d0d6ad, type: 3}
+  blockPoint: {fileID: 3715984440815094036}
 --- !u!114 &8115531999138419698
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -184,14 +184,27 @@ public class PlayerController : MonoBehaviour
             {
                 CombatSystem enemyCombat = enemy.GetComponent<CombatSystem>();
 
-                if (enemyCombat != null && !enemyCombat.IsDefending())
+                Health enemyHealth = enemy.GetComponent<Health>();
+
+                if (enemyHealth != null)
                 {
-                    Health enemyHealth = enemy.GetComponent<Health>();
-                    if (enemyHealth != null)
-                    {
-                        enemyHealth.Damage(attackDamage);
-                    }
+                    Debug.Log($"[{gameObject.name}] intentando dañar a {enemyHealth.gameObject.name}");
+
+                    // Igual que en el enemigo, llamamos SIEMPRE
+                    enemyHealth.Damage(attackDamage);
                 }
+                //Logica vieja
+                //if (enemyCombat != null && !enemyCombat.IsDefending())
+                //{
+                //    Health enemyHealth = enemy.GetComponent<Health>();
+                //    if (enemyHealth != null)
+                //    {
+                //        enemyHealth.Damage(attackDamage);
+                //        Debug.Log($"[{gameObject.name}] intentando dañar a {enemyHealth.gameObject.name}");
+
+
+                //    }
+                //}
             }
         }
     }

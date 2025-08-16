@@ -30,6 +30,11 @@ public class Health : MonoBehaviour, IDamagable
     [Header("Sonidos")]
     public AudioClip hurtSound;
 
+    [Header("VFX")]
+    [SerializeField] private ParticleSystem blockParticle; // polvo al bloquear
+    [SerializeField] private ParticleSystem bloodParticle; // sangre al recibir daño
+
+    public Transform blockPoint; // Asignar en inspector
 
     private void Start()
     {
@@ -43,11 +48,38 @@ public class Health : MonoBehaviour, IDamagable
         }
 
         UpdateHealthBar(); // Asegura que la barra empiece con el tama�o correcto
+
+        if (blockParticle != null)
+        {
+            Instantiate(blockParticle, transform.position + Vector3.up * 2, Quaternion.identity);
+        }
     }
 
     public void Damage(int damage)
     {
-        if (isInvulnerable || isDead) return;
+        //Logica vieja solo esta linea
+        //if (isInvulnerable || isDead) return;
+        if (isDead) return;
+
+        // ELEGIR PARTÍCULA SEGÚN ESTADO
+        if (isInvulnerable)
+        {
+            if (isInvulnerable && blockParticle != null)
+            {
+                var blockInstance = Instantiate(blockParticle, transform.position, Quaternion.identity);
+                Destroy(blockInstance.gameObject, blockInstance.main.duration);
+            }
+            Debug.Log($"{gameObject.name} BLOQUEÓ el golpe.");
+            return; // Bloquea, no recibe daño
+        }
+        else
+        {
+            if (bloodParticle != null)
+            {
+                var bloodInstance = Instantiate(bloodParticle, transform.position, Quaternion.identity);
+                Destroy(bloodInstance.gameObject, bloodInstance.main.duration);
+            }
+        }
 
         currentHealth -= damage;
         UpdateHealthBar(); // Actualiza la barra de vida al recibir da�o
@@ -57,6 +89,7 @@ public class Health : MonoBehaviour, IDamagable
         {
             SoundManager.instance.PlaySFX(hurtSound, 0.7f);
         }
+
         if (currentHealth <= 0)
         {
             Die();
@@ -104,6 +137,7 @@ public class Health : MonoBehaviour, IDamagable
 
     public void SetInvulnerable(bool value)
     {
+        Debug.Log($"[{gameObject.name}] Invulnerable = {value}");
         isInvulnerable = value;
     }
 
