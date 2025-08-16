@@ -123,6 +123,10 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    #region CombatLoopCore
+    private float lastDefenseTime = -999f;
+    [SerializeField] private float defenseCooldown = 3f; // tiempo entre defensas
+
     private IEnumerator CombatLoop()
     {
         while (true)
@@ -152,15 +156,23 @@ public class EnemyAI : MonoBehaviour
                     isAttacking = false;
                 }
 
-                // Dentro de CombatLoop()
-                if (!isAttacking && !isDefending)
+                // Solo defender si ya pasó el cooldown desde la última defensa
+                if (!isAttacking && !isDefending && Time.time - lastDefenseTime >= defenseCooldown)
                 {
+                    lastDefenseTime = Time.time;
                     StartCoroutine(Defend());
                 }
+                //Vieja logica
+                //// Dentro de CombatLoop()
+                //if (!isAttacking && !isDefending)
+                //{
+                //    StartCoroutine(Defend());
+                //}
             }
             yield return null;
         }
     }
+    #endregion
 
     private IEnumerator Defend()
     {

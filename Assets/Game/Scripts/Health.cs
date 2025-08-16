@@ -49,10 +49,7 @@ public class Health : MonoBehaviour, IDamagable
 
         UpdateHealthBar(); // Asegura que la barra empiece con el tama�o correcto
 
-        if (blockParticle != null)
-        {
-            Instantiate(blockParticle, transform.position + Vector3.up * 2, Quaternion.identity);
-        }
+        
     }
 
     public void Damage(int damage)
