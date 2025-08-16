@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class Health : MonoBehaviour, IDamagable
 {
@@ -100,24 +101,28 @@ public class Health : MonoBehaviour, IDamagable
 
     private IEnumerator HitEffect()
     {
-        Renderer[] allRenderers = GetComponentsInChildren<Renderer>();
+        // Solo tomamos los renderers de malla (excluyendo partículas)
+        Renderer[] allRenderers = GetComponentsInChildren<Renderer>()
+            .Where(r => r is MeshRenderer || r is SkinnedMeshRenderer)
+            .ToArray();
 
-        // Primera pasada: guardar colores y aplicar rojo
+        // Guardar colores originales y aplicar rojo
         foreach (Renderer renderer in allRenderers)
         {
-            foreach (Material material in renderer.materials)
+            // Aquí solo tomamos el material principal, no todos
+            Material material = renderer.material;
+
+            if (!originalMaterialColors.ContainsKey(material))
             {
-                if (!originalMaterialColors.ContainsKey(material))
-                {
-                    originalMaterialColors[material] = material.color;
-                }
-                material.color = Color.red;
+                originalMaterialColors[material] = material.color;
             }
+
+            material.color = Color.red;
         }
 
         yield return new WaitForSeconds(0.1f);
 
-        // Segunda pasada: restaurar colores
+        // Restaurar colores originales
         foreach (var kvp in originalMaterialColors)
         {
             kvp.Key.color = kvp.Value;
