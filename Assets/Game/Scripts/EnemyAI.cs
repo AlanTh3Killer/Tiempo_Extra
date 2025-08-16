@@ -54,9 +54,14 @@ public class EnemyAI : MonoBehaviour
         healthComponent = GetComponent<Health>();
 
         if (animator == null)
-        {
             animator = GetComponentInChildren<Animator>();
-        }
+
+        // Para evitar que el NavMeshAgent reemplace nuestra rotación manual
+        agent.updateRotation = false;
+
+        // Usualmente con NavMeshAgent no usamos root motion para rotación
+        if (animator != null)
+            animator.applyRootMotion = false;
 
         agent.stoppingDistance = Mathf.Max(stoppingDistance, 1.5f);
         //Version Vieja
@@ -70,43 +75,48 @@ public class EnemyAI : MonoBehaviour
 
         DetectPlayer();
 
-        if (isTargetDetected && target != null && !isDefending && !isAttacking)
+        if (isTargetDetected && target != null)
         {
-            //Antigua logica, solo esto
-            //FollowPlayer();
+            // Rotar SIEMPRE hacia el jugador (defendiendo o no)
+            RotateTowardsTarget();
 
-            // Rotar hacia el jugador
-            Vector3 direction = (target.position - transform.position).normalized;
-            direction.y = 0; // evitar inclinación vertical
-            if (direction != Vector3.zero)
-            {
-                Quaternion lookRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
-            }
-
+            // Seguir solo si no está defendiendo ni atacando
             if (!isDefending && !isAttacking)
             {
                 FollowPlayer();
             }
         }
 
-        bool isMoving = agent.velocity.magnitude > 0.1f;
+        // Anim de caminar: solo si realmente se mueve y no está defendiendo
+        bool isMoving = agent.velocity.sqrMagnitude > 0.01f && !isDefending;
         animator.SetBool("isWalking", isMoving);
+    }
+
+    private void RotateTowardsTarget()
+    {
+        if (target == null) return;
+
+        Vector3 direction = (target.position - transform.position);
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.0001f) return;
+
+        Quaternion lookRotation = Quaternion.LookRotation(direction.normalized);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
     }
 
     private void DetectPlayer()
     {
+        if (target == null) return;
         float distance = Vector3.Distance(transform.position, target.position);
         isTargetDetected = distance <= activationRange;
     }
 
     private void FollowPlayer()
     {
-        if (!isAttacking && !isDefending)
+        if (!isAttacking && !isDefending && target != null)
         {
             agent.isStopped = false;
-            //Version Vieja
-            //agent.SetDestination(target.position);
 
             // Dirección hacia el jugador
             Vector3 dirToPlayer = (target.position - transform.position).normalized;
@@ -117,9 +127,7 @@ public class EnemyAI : MonoBehaviour
             // Punto objetivo justo antes de entrar en rango de ataque
             Vector3 stopPosition = target.position - dirToPlayer * safeDistance;
 
-            // Mover agente al punto calculado
             agent.SetDestination(stopPosition);
-            //agent.SetDestination(targetPosition);
         }
     }
 
@@ -131,20 +139,15 @@ public class EnemyAI : MonoBehaviour
     {
         while (true)
         {
-            if (isTargetDetected && !FreezzeGame.IsFrozen)
+            if (isTargetDetected && !FreezzeGame.IsFrozen && target != null)
             {
                 float distance = Vector3.Distance(transform.position, target.position);
 
                 if (distance <= attackRange && !isDefending)
                 {
-                    Vector3 attackDir = (target.position - transform.position).normalized;
-                    attackDir.y = 0;
-                    if (attackDir != Vector3.zero)
-                    {
-                        transform.rotation = Quaternion.LookRotation(attackDir);
-                    }
+                    // Asegurar que mire al jugador al atacar
+                    RotateTowardsTarget();
 
-                    //Physics.IgnoreCollision(enemyCollider, playerCollider, true);
                     isAttacking = true;
 
                     lastAttackIndex = (lastAttackIndex == 0) ? 1 : 0;
@@ -152,22 +155,15 @@ public class EnemyAI : MonoBehaviour
                     animator.SetTrigger("isAttacking");
 
                     yield return new WaitForSeconds(attackInterval);
-                    //Physics.IgnoreCollision(enemyCollider, playerCollider, false);
                     isAttacking = false;
                 }
 
-                // Solo defender si ya pasó el cooldown desde la última defensa
+                // Defender solo si ya pasó el cooldown
                 if (!isAttacking && !isDefending && Time.time - lastDefenseTime >= defenseCooldown)
                 {
                     lastDefenseTime = Time.time;
                     StartCoroutine(Defend());
                 }
-                //Vieja logica
-                //// Dentro de CombatLoop()
-                //if (!isAttacking && !isDefending)
-                //{
-                //    StartCoroutine(Defend());
-                //}
             }
             yield return null;
         }
@@ -185,9 +181,16 @@ public class EnemyAI : MonoBehaviour
         animator.SetBool("isDefending", true);
         Debug.Log($"{gameObject.name}: Defendiéndose");
 
-        yield return new WaitForSeconds(defenseDuration);
+        // Mantener rotación mientras dura la defensa
+        float elapsed = 0f;
+        while (elapsed < defenseDuration)
+        {
+            RotateTowardsTarget();
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
 
-        combatSystem.EndDefense();                    
+        combatSystem.EndDefense();
         healthComponent.SetInvulnerable(false);
 
         isDefending = false;
